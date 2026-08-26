@@ -1441,6 +1441,28 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--ink-30);
 }
 
+/* Reset Button */
+.reset-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--blaze-bg);
+  color: var(--blaze);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.reset-btn:active { background: var(--blaze-soft); }
+
 /* ══════════════════════════════════════════
    Utility
    ══════════════════════════════════════════ */
@@ -2103,6 +2125,13 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
 
     <div class="profile-section">
+      <button class="reset-btn" id="resetBtn">
+        <span>🔄</span>
+        Reset app &amp; redo onboarding
+      </button>
+    </div>
+
+    <div class="profile-section">
       <div style="text-align:center;padding:var(--space-md) 0;">
         <div style="font-family:var(--display);font-size:20px;font-weight:700;background:var(--glow);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;">JUVI</div>
         <div style="font-size:12px;color:var(--ink-30);">v0.1 prototype</div>
@@ -2143,23 +2172,60 @@ input[type="range"]::-webkit-slider-thumb {
    JUVI Prototype — Navigation & Interactions
    ═══════════════════════════════════════════ */
 
-const mainScreens = ['screen-dashboard','screen-workout','screen-trainers','screen-community','screen-profile'];
+/* ── Scroll Guard ──
+   Prevents accidental taps while scrolling.
+   Tracks touch movement; if finger moves > threshold,
+   suppress the click that follows. */
+var scrollGuard = {
+  startX: 0,
+  startY: 0,
+  moved: false,
+  threshold: 12
+};
+
+document.addEventListener('touchstart', function(e) {
+  scrollGuard.startX = e.touches[0].clientX;
+  scrollGuard.startY = e.touches[0].clientY;
+  scrollGuard.moved = false;
+}, { passive: true });
+
+document.addEventListener('touchmove', function(e) {
+  if (scrollGuard.moved) return;
+  var dx = Math.abs(e.touches[0].clientX - scrollGuard.startX);
+  var dy = Math.abs(e.touches[0].clientY - scrollGuard.startY);
+  if (dx > scrollGuard.threshold || dy > scrollGuard.threshold) {
+    scrollGuard.moved = true;
+  }
+}, { passive: true });
+
+function wasTap() {
+  return !scrollGuard.moved;
+}
+
+/* ── Navigation ── */
+var mainScreens = ['screen-dashboard','screen-workout','screen-trainers','screen-community','screen-profile'];
 
 function goTo(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(screenId).classList.add('active');
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var target = document.getElementById(screenId);
+  if (target) {
+    target.classList.add('active');
+    target.scrollTop = 0;
+  }
 
-  // Show/hide nav
-  const nav = document.getElementById('bottomNav');
-  if (mainScreens.includes(screenId) || screenId === 'screen-trainer-profile') {
+  var nav = document.getElementById('bottomNav');
+  if (mainScreens.indexOf(screenId) !== -1 || screenId === 'screen-trainer-profile') {
     nav.classList.add('visible');
   } else {
     nav.classList.remove('visible');
   }
 
-  // Update nav active state
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.toggle('active', item.dataset.screen === screenId);
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    if (item.dataset.screen === screenId) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
   });
 }
 
@@ -2167,35 +2233,35 @@ function navTo(screenId) {
   goTo(screenId);
 }
 
-// Onboarding
-let currentStep = 1;
+/* ── Onboarding ── */
+var currentStep = 1;
 
 function selectOption(el, stepId) {
-  const step = document.getElementById(stepId);
-  step.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  if (!wasTap()) return;
+  var step = document.getElementById(stepId);
+  step.querySelectorAll('.option-card').forEach(function(c) { c.classList.remove('selected'); });
   el.classList.add('selected');
-  // Enable continue
-  const btn = document.getElementById('ob1-next');
+  var btn = document.getElementById('ob1-next');
   if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'all'; }
 }
 
 function onboardNext(step) {
-  document.querySelectorAll('.onboard-step').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.onboard-step').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('ob-step-' + step).classList.add('active');
   updateProgress(step);
   currentStep = step;
 }
 
 function onboardBack(step) {
-  document.querySelectorAll('.onboard-step').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.onboard-step').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('ob-step-' + step).classList.add('active');
   updateProgress(step);
   currentStep = step;
 }
 
 function updateProgress(step) {
-  const segs = document.querySelectorAll('.progress-seg');
-  segs.forEach((seg, i) => {
+  var segs = document.querySelectorAll('.progress-seg');
+  segs.forEach(function(seg, i) {
     seg.className = 'progress-seg';
     if (i < step - 1) seg.classList.add('filled');
     if (i === step - 1) seg.classList.add('filling');
@@ -2203,15 +2269,17 @@ function updateProgress(step) {
 }
 
 function updateExp(val) {
-  const labels = ['Beginner', 'Intermediate', 'Advanced'];
+  var labels = ['Beginner', 'Intermediate', 'Advanced'];
   document.getElementById('expVal').textContent = labels[val];
 }
 
 function toggleDay(el) {
+  if (!wasTap()) return;
   el.classList.toggle('selected');
 }
 
 function toggleFlex(el) {
+  if (!wasTap()) return;
   el.classList.toggle('active');
   var days = document.querySelectorAll('#daySelector .day-pill');
   if (el.classList.contains('active')) {
@@ -2229,7 +2297,8 @@ function toggleFlex(el) {
 }
 
 function toggleFilter(el) {
-  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  if (!wasTap()) return;
+  document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
   el.classList.add('active');
 }
 
@@ -2237,35 +2306,68 @@ function enterApp() {
   goTo('screen-dashboard');
 }
 
-// Fallback: event delegation for all clickable elements
-// (handles cases where inline onclick may not fire)
-document.addEventListener('click', function(e) {
-  const btn = e.target.closest('[data-go]');
-  if (btn) {
-    e.preventDefault();
-    goTo(btn.getAttribute('data-go'));
-  }
-  const optCard = e.target.closest('[data-option-step]');
-  if (optCard) {
-    selectOption(optCard, optCard.getAttribute('data-option-step'));
-  }
-  const dayEl = e.target.closest('[data-toggle-day]');
-  if (dayEl) {
-    dayEl.classList.toggle('selected');
-  }
-  const filterEl = e.target.closest('[data-filter]');
-  if (filterEl) {
-    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-    filterEl.classList.add('active');
-  }
-});
+/* ── Reset ── */
+function resetApp() {
+  if (!wasTap()) return;
+  // Reset onboarding state
+  currentStep = 1;
+  document.querySelectorAll('.onboard-step').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('ob-step-1').classList.add('active');
+  updateProgress(1);
 
-// Also handle touch events for mobile
-document.addEventListener('touchend', function(e) {
-  const btn = e.target.closest('[data-go]');
+  // Clear selections
+  document.querySelectorAll('.option-card').forEach(function(c) { c.classList.remove('selected'); });
+  var ob1next = document.getElementById('ob1-next');
+  if (ob1next) { ob1next.style.opacity = '0.4'; ob1next.style.pointerEvents = 'none'; }
+
+  // Reset day pills
+  document.querySelectorAll('#daySelector .day-pill').forEach(function(d) {
+    d.classList.remove('selected');
+    d.style.opacity = '1';
+    d.style.pointerEvents = 'all';
+  });
+
+  // Reset flex toggle
+  var flexBtn = document.getElementById('flexToggle');
+  if (flexBtn) flexBtn.classList.remove('active');
+
+  // Reset sliders
+  document.querySelectorAll('input[type="range"]').forEach(function(r) {
+    r.value = r.defaultValue;
+  });
+  var expVal = document.getElementById('expVal');
+  if (expVal) expVal.textContent = 'Intermediate';
+  var sessVal = document.getElementById('sessVal');
+  if (sessVal) sessVal.textContent = '3×';
+  var lenVal = document.getElementById('lenVal');
+  if (lenVal) lenVal.textContent = '45 min';
+
+  // Go to welcome
+  goTo('screen-welcome');
+}
+
+/* ── Event Delegation (scroll-guarded) ── */
+document.addEventListener('click', function(e) {
+  if (!wasTap()) return;
+
+  var btn = e.target.closest('[data-go]');
   if (btn) {
     e.preventDefault();
     goTo(btn.getAttribute('data-go'));
+    return;
+  }
+
+  var optCard = e.target.closest('.option-card');
+  if (optCard) {
+    var step = optCard.closest('.onboard-step');
+    if (step) selectOption(optCard, step.id);
+    return;
+  }
+
+  var resetBtn = e.target.closest('#resetBtn');
+  if (resetBtn) {
+    resetApp();
+    return;
   }
 });
 </script>
