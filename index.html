@@ -74,29 +74,26 @@ body {
   overflow: hidden;
 }
 
-/* ── Phone Frame (desktop) ── */
+/* ── Phone Frame ── */
 .phone-frame {
-  width: var(--frame-w);
-  height: var(--frame-h);
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   background: var(--chalk);
-  border-radius: 44px;
   overflow: hidden;
   position: relative;
-  box-shadow:
-    0 0 0 2px #1C181620,
-    0 24px 80px -12px rgba(0,0,0,0.25),
-    0 8px 24px -4px rgba(0,0,0,0.12);
 }
 
-/* On actual mobile, go full-screen */
-@media (max-width: 430px) {
-  body { background: var(--chalk); align-items: flex-start; }
+/* On desktop, show as phone mockup */
+@media (min-width: 431px) {
   .phone-frame {
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    border-radius: 0;
-    box-shadow: none;
+    width: var(--frame-w);
+    height: var(--frame-h);
+    border-radius: 44px;
+    box-shadow:
+      0 0 0 2px #1C181620,
+      0 24px 80px -12px rgba(0,0,0,0.25),
+      0 8px 24px -4px rgba(0,0,0,0.12);
   }
 }
 
@@ -198,6 +195,8 @@ body {
   justify-content: flex-end;
   padding: var(--space-2xl);
   padding-bottom: 60px;
+  overflow: visible;
+  z-index: 5;
 }
 .welcome-mark {
   font-family: var(--display);
@@ -231,6 +230,9 @@ body {
   letter-spacing: 0.02em;
   transition: transform 0.15s, box-shadow 0.15s;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 10;
+  touch-action: manipulation;
 }
 .btn-primary:active { transform: scale(0.97); }
 .btn-white {
@@ -1395,7 +1397,7 @@ input[type="range"]::-webkit-slider-thumb {
     <div class="welcome-tagline">
       Fitness that adapts to your life — not the other way around.
     </div>
-    <button class="btn-primary btn-white btn-block" onclick="goTo('screen-onboarding')">
+    <button class="btn-primary btn-white btn-block" onclick="goTo('screen-onboarding')" data-go="screen-onboarding">
       Get started
     </button>
   </div>
@@ -1446,7 +1448,7 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
       </div>
       <div class="onboard-footer">
-        <button class="btn-back" onclick="goTo('screen-welcome')">
+        <button class="btn-back" onclick="goTo('screen-welcome')" data-go="screen-welcome">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
         </button>
         <button class="btn-primary btn-gradient btn-block" onclick="onboardNext(2)" id="ob1-next" style="opacity:0.4;pointer-events:none">Continue</button>
@@ -1510,7 +1512,7 @@ input[type="range"]::-webkit-slider-thumb {
         <button class="btn-back" onclick="onboardBack(2)">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
         </button>
-        <button class="btn-primary btn-gradient btn-block" onclick="goTo('screen-ready')">Build my plan</button>
+        <button class="btn-primary btn-gradient btn-block" onclick="goTo('screen-ready')" data-go="screen-ready">Build my plan</button>
       </div>
     </div>
   </div>
@@ -1544,11 +1546,11 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
       </div>
     </div>
-    <button class="btn-primary btn-gradient btn-block" onclick="enterApp()">
+    <button class="btn-primary btn-gradient btn-block" onclick="enterApp()" data-go="screen-dashboard">
       Let's go
     </button>
     <div style="text-align:center;margin-top:var(--space-md);">
-      <button class="btn-primary btn-outline" style="height:44px;font-size:14px;" onclick="enterApp()">
+      <button class="btn-primary btn-outline" style="height:44px;font-size:14px;" onclick="enterApp()" data-go="screen-dashboard">
         Explore the app first
       </button>
     </div>
@@ -1603,7 +1605,7 @@ input[type="range"]::-webkit-slider-thumb {
 
     <div class="section-pad">
       <div class="section-title">Today's session</div>
-      <div class="today-card" onclick="goTo('screen-workout')">
+      <div class="today-card" onclick="goTo('screen-workout')" data-go="screen-workout">
         <div class="today-type">Week 3 · Day 2</div>
         <div class="today-title">Tempo Run + Core</div>
         <div class="today-meta">
@@ -1634,15 +1636,15 @@ input[type="range"]::-webkit-slider-thumb {
       </div>
 
       <div class="quick-actions">
-        <div class="quick-action" onclick="goTo('screen-trainers')">
+        <div class="quick-action" onclick="goTo('screen-trainers')" data-go="screen-trainers">
           <div class="quick-action-icon" style="background:var(--sol-bg)">🎯</div>
           <div class="quick-action-label">Find a<br>trainer</div>
         </div>
-        <div class="quick-action" onclick="goTo('screen-workout')">
+        <div class="quick-action" onclick="goTo('screen-workout')" data-go="screen-workout">
           <div class="quick-action-icon" style="background:var(--blaze-bg)">📊</div>
           <div class="quick-action-label">Adjust<br>plan</div>
         </div>
-        <div class="quick-action" onclick="goTo('screen-community')">
+        <div class="quick-action" onclick="goTo('screen-community')" data-go="screen-community">
           <div class="quick-action-icon" style="background:var(--paper)">👥</div>
           <div class="quick-action-label">Community</div>
         </div>
@@ -1655,7 +1657,7 @@ input[type="range"]::-webkit-slider-thumb {
        ╚══════════════════════════════════════╝ -->
   <div class="screen screen-workout" id="screen-workout">
     <div class="workout-hero">
-      <button class="workout-back" onclick="goTo('screen-dashboard')">
+      <button class="workout-back" onclick="goTo('screen-dashboard')" data-go="screen-dashboard">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
       </button>
       <div class="workout-type">Week 3 · Day 2</div>
@@ -1744,7 +1746,7 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="filter-pill" onclick="toggleFilter(this)">Mobility</div>
     </div>
     <div class="trainer-grid">
-      <div class="trainer-card" onclick="goTo('screen-trainer-profile')">
+      <div class="trainer-card" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile">
         <div class="trainer-avatar">🏋️</div>
         <div class="trainer-info">
           <div class="trainer-name">Sarah K.</div>
@@ -1757,7 +1759,7 @@ input[type="range"]::-webkit-slider-thumb {
           <div class="trainer-rating">⭐ <strong>4.9</strong> · 127 athletes</div>
         </div>
       </div>
-      <div class="trainer-card" onclick="goTo('screen-trainer-profile')">
+      <div class="trainer-card" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile">
         <div class="trainer-avatar">💪</div>
         <div class="trainer-info">
           <div class="trainer-name">Marcus J.</div>
@@ -1770,7 +1772,7 @@ input[type="range"]::-webkit-slider-thumb {
           <div class="trainer-rating">⭐ <strong>4.8</strong> · 89 athletes</div>
         </div>
       </div>
-      <div class="trainer-card" onclick="goTo('screen-trainer-profile')">
+      <div class="trainer-card" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile">
         <div class="trainer-avatar">🧘</div>
         <div class="trainer-info">
           <div class="trainer-name">Aisha T.</div>
@@ -1783,7 +1785,7 @@ input[type="range"]::-webkit-slider-thumb {
           <div class="trainer-rating">⭐ <strong>5.0</strong> · 64 athletes</div>
         </div>
       </div>
-      <div class="trainer-card" onclick="goTo('screen-trainer-profile')">
+      <div class="trainer-card" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile">
         <div class="trainer-avatar">🥗</div>
         <div class="trainer-info">
           <div class="trainer-name">Liam D.</div>
@@ -1803,7 +1805,7 @@ input[type="range"]::-webkit-slider-thumb {
        ╚══════════════════════════════════════╝ -->
   <div class="screen screen-trainer-profile" id="screen-trainer-profile">
     <div style="padding:var(--space-md) var(--space-lg) 0;">
-      <button class="workout-back" onclick="goTo('screen-trainers')">
+      <button class="workout-back" onclick="goTo('screen-trainers')" data-go="screen-trainers">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
       </button>
     </div>
@@ -2032,23 +2034,23 @@ input[type="range"]::-webkit-slider-thumb {
        ║  Bottom Navigation                   ║
        ╚══════════════════════════════════════╝ -->
   <nav class="bottom-nav" id="bottomNav">
-    <button class="nav-item active" onclick="navTo('screen-dashboard')" data-screen="screen-dashboard">
+    <button class="nav-item active" onclick="navTo('screen-dashboard')" data-go="screen-dashboard" data-screen="screen-dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
       <span class="nav-label">Home</span>
     </button>
-    <button class="nav-item" onclick="navTo('screen-workout')" data-screen="screen-workout">
+    <button class="nav-item" onclick="navTo('screen-workout')" data-go="screen-workout" data-screen="screen-workout">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       <span class="nav-label">Train</span>
     </button>
-    <button class="nav-item" onclick="navTo('screen-trainers')" data-screen="screen-trainers">
+    <button class="nav-item" onclick="navTo('screen-trainers')" data-go="screen-trainers" data-screen="screen-trainers">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
       <span class="nav-label">Trainers</span>
     </button>
-    <button class="nav-item" onclick="navTo('screen-community')" data-screen="screen-community">
+    <button class="nav-item" onclick="navTo('screen-community')" data-go="screen-community" data-screen="screen-community">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       <span class="nav-label">Community</span>
     </button>
-    <button class="nav-item" onclick="navTo('screen-profile')" data-screen="screen-profile">
+    <button class="nav-item" onclick="navTo('screen-profile')" data-go="screen-profile" data-screen="screen-profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4-4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span class="nav-label">Profile</span>
     </button>
@@ -2156,6 +2158,38 @@ setInterval(updateTime, 60000);
 
 // Init: welcome screen with light status bar
 document.getElementById('statusBar').classList.add('light');
+
+// Fallback: event delegation for all clickable elements
+// (handles cases where inline onclick may not fire)
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-go]');
+  if (btn) {
+    e.preventDefault();
+    goTo(btn.getAttribute('data-go'));
+  }
+  const optCard = e.target.closest('[data-option-step]');
+  if (optCard) {
+    selectOption(optCard, optCard.getAttribute('data-option-step'));
+  }
+  const dayEl = e.target.closest('[data-toggle-day]');
+  if (dayEl) {
+    dayEl.classList.toggle('selected');
+  }
+  const filterEl = e.target.closest('[data-filter]');
+  if (filterEl) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    filterEl.classList.add('active');
+  }
+});
+
+// Also handle touch events for mobile
+document.addEventListener('touchend', function(e) {
+  const btn = e.target.closest('[data-go]');
+  if (btn) {
+    e.preventDefault();
+    goTo(btn.getAttribute('data-go'));
+  }
+});
 </script>
 </body>
 </html>
