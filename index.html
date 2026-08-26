@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>JUVI — Fitness, your way</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   JUVI Design System
+   Working prototype — v0.1
+   ═══════════════════════════════════════════ */
+
+:root {
+  /* Palette */
+  --sol: #D9A62E;
+  --sol-soft: #F5E6B8;
+  --sol-bg: #FDF8ED;
+  --blaze: #C44235;
+  --blaze-soft: #F3CCC8;
+  --blaze-bg: #FDF0EE;
+  --chalk: #FAFAF7;
+  --paper: #F2EEEA;
+  --ink: #1C1816;
+  --ink-60: #6B6560;
+  --ink-30: #B0AAA4;
+  --ink-10: #E2DFDB;
+  --white: #FFFFFF;
+
+  /* Gradient */
+  --glow: linear-gradient(135deg, #D9A62E 0%, #C44235 100%);
+  --glow-soft: linear-gradient(135deg, #F5E6B8 0%, #F3CCC8 100%);
+
+  /* Type */
+  --display: 'Space Grotesk', system-ui, sans-serif;
+  --body: 'DM Sans', system-ui, sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  /* Frame */
+  --frame-w: 390px;
+  --frame-h: 844px;
+  --nav-h: 72px;
+  --status-h: 44px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--body);
+  background: #E8E4E0;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Phone Frame (desktop) ── */
+.phone-frame {
+  width: var(--frame-w);
+  height: var(--frame-h);
+  background: var(--chalk);
+  border-radius: 44px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 2px #1C181620,
+    0 24px 80px -12px rgba(0,0,0,0.25),
+    0 8px 24px -4px rgba(0,0,0,0.12);
+}
+
+/* On actual mobile, go full-screen */
+@media (max-width: 430px) {
+  body { background: var(--chalk); align-items: flex-start; }
+  .phone-frame {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* ── Status Bar ── */
+.status-bar {
+  height: var(--status-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  font-family: var(--body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  transition: color 0.3s;
+}
+.status-bar.light { color: var(--white); }
+.status-icons { display: flex; gap: 5px; align-items: center; }
+
+/* ── Screens Container ── */
+.screens {
+  position: absolute;
+  inset: 0;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  background: var(--chalk);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: translateX(20px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+.screen::-webkit-scrollbar { display: none; }
+
+/* ── Bottom Navigation ── */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  background: var(--white);
+  border-top: 1px solid var(--ink-10);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding-top: 10px;
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.bottom-nav.visible { opacity: 1; pointer-events: all; }
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-30);
+  transition: color 0.2s;
+  padding: 4px 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item.active { color: var(--ink); }
+.nav-item svg { width: 24px; height: 24px; }
+.nav-label {
+  font-family: var(--body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* ══════════════════════════════════════════
+   SCREEN: Welcome
+   ══════════════════════════════════════════ */
+.screen-welcome {
+  background: var(--glow);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-2xl);
+  padding-bottom: 60px;
+}
+.welcome-mark {
+  font-family: var(--display);
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -2px;
+  line-height: 0.9;
+  margin-bottom: var(--space-md);
+}
+.welcome-tagline {
+  font-family: var(--body);
+  font-size: 18px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+  margin-bottom: var(--space-3xl);
+  max-width: 280px;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: 0 var(--space-xl);
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: transform 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary:active { transform: scale(0.97); }
+.btn-white {
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+.btn-gradient {
+  background: var(--glow);
+  color: var(--white);
+  box-shadow: 0 4px 24px rgba(196,66,53,0.25);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border: 2px solid var(--ink-10);
+}
+.btn-block { width: 100%; }
+
+/* ══════════════════════════════════════════
+   SCREEN: Onboarding
+   ══════════════════════════════════════════ */
+.screen-onboarding {
+  display: flex;
+  flex-direction: column;
+}
+
+.onboard-progress {
+  position: absolute;
+  top: var(--status-h);
+  left: var(--space-lg);
+  right: var(--space-lg);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+  padding-top: var(--space-md);
+}
+.progress-seg {
+  flex: 1;
+  height: 3px;
+  background: var(--ink-10);
+  border-radius: 2px;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+.progress-seg.filled { background: var(--ink); }
+.progress-seg.filling {
+  background: var(--ink-10);
+  position: relative;
+}
+.progress-seg.filling::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  border-radius: 2px;
+  animation: fillBar 0.4s ease forwards;
+}
+@keyframes fillBar { from { width: 0; } to { width: 100%; } }
+
+.onboard-step {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--status-h) + 40px) var(--space-lg) var(--space-lg);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(30px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.onboard-step.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+
+.onboard-eyebrow {
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-60);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+.onboard-title {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin-bottom: var(--space-lg);
+}
+.onboard-sub {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--ink-60);
+  line-height: 1.5;
+  margin-bottom: var(--space-xl);
+}
+
+/* Option Cards */
+.option-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  flex: 1;
+}
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--white);
+  border: 2px solid var(--ink-10);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.option-card:active { transform: scale(0.98); }
+.option-card.selected {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+.option-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.option-icon.yellow { background: var(--sol-bg); }
+.option-icon.red { background: var(--blaze-bg); }
+.option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.option-label {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+}
+.option-desc {
+  font-size: 13px;
+  color: var(--ink-60);
+}
+
+/* Day Selector */
+.day-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+.day-pill {
+  width: calc(25% - 6px);
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--ink-10);
+  background: var(--white);
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.day-pill.selected {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
+}
+
+/* Slider */
+.slider-group { margin-bottom: var(--space-xl); }
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+.slider-label-text {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+}
+.slider-value {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--blaze);
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ink-10);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.onboard-footer {
+  margin-top: auto;
+  display: flex;
+  gap: var(--space-md);
+  padding-top: var(--space-lg);
+}
+.btn-back {
+  height: 56px;
+  width: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--ink-10);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-back:active { background: var(--paper); }
+
+/* ══════════════════════════════════════════
+   SCREEN: Onboarding Complete
+   ══════════════════════════════════════════ */
+.screen-ready {
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--status-h) + var(--space-2xl)) var(--space-lg) var(--space-lg);
+}
+.ready-badge {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+  animation: popIn 0.5s ease;
+}
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.ready-title {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin-bottom: var(--space-md);
+}
+.ready-sub {
+  font-size: 15px;
+  color: var(--ink-60);
+  line-height: 1.5;
+  margin-bottom: var(--space-xl);
+}
+.plan-preview {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  border: 1px solid var(--ink-10);
+}
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+.plan-label {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-60);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.plan-weeks {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blaze);
+}
+.plan-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-md);
+}
+.plan-stat {
+  text-align: center;
+}
+.plan-stat-val {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 700;
+  background: var(--glow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.plan-stat-label {
+  font-size: 12px;
+  color: var(--ink-60);
+  margin-top: 2px;
+}
+
+/* ══════════════════════════════════════════
+   SCREEN: Dashboard
+   ══════════════════════════════════════════ */
+.screen-dashboard {
+  padding-top: var(--status-h);
+  padding-bottom: calc(var(--nav-h) + var(--space-md));
+}
+.dash-header {
+  padding: var(--space-md) var(--space-lg) 0;
+}
+.dash-greeting {
+  font-size: 14px;
+  color: var(--ink-60);
+  margin-bottom: 2px;
+}
+.dash-name {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+/* Week Strip */
+.week-strip {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  overflow-x: auto;
+}
+.week-strip::-webkit-scrollbar { display: none; }
+.week-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 44px;
+  padding: var(--space-sm) 0;
+}
+.week-day-label {
+  font-size: 11px;
+  color: var(--ink-30);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.week-day-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-60);
+  transition: all 0.2s;
+}
+.week-day.today .week-day-num {
+  background: var(--ink);
+  color: var(--white);
+}
+.week-day.completed .week-day-num {
+  background: var(--sol-bg);
+  color: var(--sol);
+}
+.week-day-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: transparent;
+}
+.week-day.has-workout .week-day-dot { background: var(--blaze); }
+.week-day.completed .week-day-dot { background: var(--sol); }
+
+/* Today's Workout Card */
+.section-pad { padding: 0 var(--space-lg); }
+.section-title {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+}
+
+.today-card {
+  background: var(--ink);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.today-card:active { transform: scale(0.98); }
+.today-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: var(--glow);
+  opacity: 0.15;
+}
+.today-type {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sol);
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+}
+.today-title {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+}
+.today-meta {
+  display: flex;
+  gap: var(--space-lg);
+}
+.today-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+}
+.today-meta-item svg { width: 16px; height: 16px; opacity: 0.7; }
+.today-cta {
+  margin-top: var(--space-lg);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sol);
+}
+.today-cta svg { width: 18px; height: 18px; }
+
+/* Stats Row */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+.stat-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--ink-10);
+}
+.stat-value {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.stat-value.gradient {
+  background: var(--glow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-unit {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.6;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--ink-60);
+  margin-top: 2px;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+.quick-action {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--white);
+  border: 1px solid var(--ink-10);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.quick-action:active { background: var(--paper); }
+.quick-action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.quick-action-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-60);
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════
+   SCREEN: Workout Detail
+   ══════════════════════════════════════════ */
+.screen-workout {
+  padding-top: var(--status-h);
+  padding-bottom: var(--space-2xl);
+}
+.workout-hero {
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+.workout-back {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: var(--space-md);
+  -webkit-tap-highlight-color: transparent;
+}
+.workout-type {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--blaze);
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+}
+.workout-title {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: var(--space-md);
+}
+.workout-info {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.workout-info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--ink-60);
+}
+
+/* Adjust Banner */
+.adjust-banner {
+  margin: 0 var(--space-lg) var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--sol-bg);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.adjust-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sol);
+}
+.adjust-text strong { font-weight: 700; }
+
+/* Exercise List */
+.exercise-list {
+  padding: 0 var(--space-lg);
+}
+.exercise-item {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--ink-10);
+}
+.exercise-item:last-child { border-bottom: none; }
+.exercise-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-60);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.exercise-details { flex: 1; }
+.exercise-name {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.exercise-spec {
+  font-size: 13px;
+  color: var(--ink-60);
+}
+.exercise-tag {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.exercise-tag.easy { background: var(--sol-bg); color: var(--sol); }
+.exercise-tag.hard { background: var(--blaze-bg); color: var(--blaze); }
+
+.workout-start {
+  margin: var(--space-xl) var(--space-lg) 0;
+}
+
+/* ══════════════════════════════════════════
+   SCREEN: Trainers
+   ══════════════════════════════════════════ */
+.screen-trainers {
+  padding-top: var(--status-h);
+  padding-bottom: calc(var(--nav-h) + var(--space-md));
+}
+.trainers-header {
+  padding: var(--space-md) var(--space-lg) 0;
+}
+.trainers-title {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: var(--space-md);
+}
+
+/* Filter Pills */
+.filter-strip {
+  display: flex;
+  gap: var(--space-sm);
+  padding: 0 var(--space-lg) var(--space-md);
+  overflow-x: auto;
+}
+.filter-strip::-webkit-scrollbar { display: none; }
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--ink-10);
+  background: var(--white);
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.filter-pill.active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
+}
+
+/* Trainer Cards */
+.trainer-grid {
+  padding: 0 var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.trainer-card {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--white);
+  border: 1px solid var(--ink-10);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.trainer-card:active { transform: scale(0.98); }
+.trainer-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-md);
+  background: var(--glow-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.trainer-info { flex: 1; min-width: 0; }
+.trainer-name {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.trainer-specialty {
+  font-size: 13px;
+  color: var(--ink-60);
+  margin-bottom: var(--space-sm);
+}
+.trainer-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.trainer-tag {
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--paper);
+  color: var(--ink-60);
+}
+.trainer-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--space-sm);
+  font-size: 13px;
+  color: var(--ink-60);
+}
+.trainer-rating strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   SCREEN: Trainer Profile
+   ══════════════════════════════════════════ */
+.screen-trainer-profile {
+  padding-top: var(--status-h);
+  padding-bottom: var(--space-2xl);
+}
+.tp-hero {
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+}
+.tp-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-lg);
+  background: var(--glow-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  flex-shrink: 0;
+}
+.tp-info { flex: 1; }
+.tp-name {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.tp-spec {
+  font-size: 14px;
+  color: var(--ink-60);
+  margin-bottom: var(--space-sm);
+}
+.tp-stats {
+  display: flex;
+  gap: var(--space-lg);
+}
+.tp-stat-val {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 700;
+}
+.tp-stat-label {
+  font-size: 11px;
+  color: var(--ink-60);
+}
+.tp-bio {
+  padding: var(--space-lg);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-60);
+}
+.tp-section-title {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0 var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.tp-tags {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  padding: 0 var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.tp-tag {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--paper);
+  color: var(--ink-60);
+}
+
+.tp-cta {
+  padding: 0 var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+/* ══════════════════════════════════════════
+   SCREEN: Community
+   ══════════════════════════════════════════ */
+.screen-community {
+  padding-top: var(--status-h);
+  padding-bottom: calc(var(--nav-h) + var(--space-md));
+}
+.community-header {
+  padding: var(--space-md) var(--space-lg) 0;
+}
+.community-title {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: var(--space-lg);
+}
+
+/* Challenge Banner */
+.challenge-card {
+  margin: 0 var(--space-lg) var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--glow);
+  border-radius: var(--radius-lg);
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.challenge-card::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  right: -10px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+}
+.challenge-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+  margin-bottom: var(--space-sm);
+  font-weight: 600;
+}
+.challenge-title {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+.challenge-sub {
+  font-size: 13px;
+  opacity: 0.85;
+}
+.challenge-progress {
+  margin-top: var(--space-md);
+  height: 4px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.challenge-progress-fill {
+  height: 100%;
+  width: 42%;
+  background: var(--white);
+  border-radius: 2px;
+}
+
+/* Feed Posts */
+.feed { padding: 0 var(--space-lg); }
+.feed-post {
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--ink-10);
+}
+.feed-post:last-child { border-bottom: none; }
+.feed-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+.feed-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.feed-avatar.a { background: var(--sol-bg); }
+.feed-avatar.b { background: var(--blaze-bg); }
+.feed-avatar.c { background: var(--paper); }
+.feed-user-info { flex: 1; }
+.feed-username {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+}
+.feed-time {
+  font-size: 12px;
+  color: var(--ink-30);
+}
+.feed-body {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+}
+.feed-activity {
+  background: var(--paper);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-sm);
+}
+.feed-activity-stat {
+  text-align: center;
+}
+.feed-activity-val {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+}
+.feed-activity-label {
+  font-size: 11px;
+  color: var(--ink-60);
+}
+.feed-actions {
+  display: flex;
+  gap: var(--space-lg);
+  padding-top: var(--space-sm);
+}
+.feed-action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--ink-30);
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ══════════════════════════════════════════
+   SCREEN: Profile
+   ══════════════════════════════════════════ */
+.screen-profile {
+  padding-top: var(--status-h);
+  padding-bottom: calc(var(--nav-h) + var(--space-md));
+}
+.profile-header {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+}
+.profile-avatar-letter {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--white);
+}
+.profile-name {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.profile-since {
+  font-size: 13px;
+  color: var(--ink-60);
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--ink-10);
+  margin: var(--space-md) var(--space-lg) var(--space-xl);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.profile-stat {
+  background: var(--white);
+  padding: var(--space-md);
+  text-align: center;
+}
+.profile-stat-val {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+}
+.profile-stat-label {
+  font-size: 11px;
+  color: var(--ink-60);
+  margin-top: 2px;
+}
+
+.profile-section {
+  padding: 0 var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.profile-section-title {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-60);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-md);
+}
+.profile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--ink-10);
+  cursor: pointer;
+}
+.profile-row:last-child { border-bottom: none; }
+.profile-row-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.profile-row-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.profile-row-label {
+  font-size: 15px;
+  font-weight: 500;
+}
+.profile-row-chevron {
+  color: var(--ink-30);
+}
+
+/* ══════════════════════════════════════════
+   Utility
+   ══════════════════════════════════════════ */
+.fade-up {
+  animation: fadeUp 0.5s ease forwards;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.delay-1 { animation-delay: 0.1s; opacity: 0; }
+.delay-2 { animation-delay: 0.2s; opacity: 0; }
+.delay-3 { animation-delay: 0.3s; opacity: 0; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+
+  <!-- Status Bar -->
+  <div class="status-bar" id="statusBar">
+    <span id="statusTime">9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><path d="M1 4.5C3.73 1.5 7.1 0 10.5 0c3.4 0 6.77 1.5 9.5 4.5" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M3.5 7C5.5 5 7.87 4 10.5 4c2.63 0 5 1 7 3" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5"/><circle cx="10.5" cy="10" r="2" fill="currentColor"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="3" width="3" height="9" rx="0.5" opacity="0.3"/><rect x="4.5" y="2" width="3" height="10" rx="0.5" opacity="0.5"/><rect x="9" y="0" width="3" height="12" rx="0.5" opacity="0.7"/><rect x="13.5" y="0" width="2.5" height="12" rx="0.5"/></svg>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Welcome                     ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-welcome active" id="screen-welcome">
+    <div class="welcome-mark">
+      JUVI
+    </div>
+    <div class="welcome-tagline">
+      Fitness that adapts to your life — not the other way around.
+    </div>
+    <button class="btn-primary btn-white btn-block" onclick="goTo('screen-onboarding')">
+      Get started
+    </button>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Onboarding                  ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-onboarding" id="screen-onboarding">
+    <div class="onboard-progress" id="onboardProgress">
+      <div class="progress-seg filled"></div>
+      <div class="progress-seg"></div>
+      <div class="progress-seg"></div>
+    </div>
+
+    <!-- Step 1: Goal -->
+    <div class="onboard-step active" id="ob-step-1">
+      <div class="onboard-eyebrow">Step 1 of 3</div>
+      <div class="onboard-title">What are you<br>training for?</div>
+      <div class="onboard-sub">Pick your primary goal. You can always adjust this later.</div>
+      <div class="option-grid">
+        <div class="option-card" onclick="selectOption(this, 'ob-step-1')">
+          <div class="option-icon red">🏃</div>
+          <div class="option-text">
+            <div class="option-label">Run a race</div>
+            <div class="option-desc">5K, 10K, half or full marathon</div>
+          </div>
+        </div>
+        <div class="option-card" onclick="selectOption(this, 'ob-step-1')">
+          <div class="option-icon yellow">💪</div>
+          <div class="option-text">
+            <div class="option-label">Build strength</div>
+            <div class="option-desc">Muscle, power, body composition</div>
+          </div>
+        </div>
+        <div class="option-card" onclick="selectOption(this, 'ob-step-1')">
+          <div class="option-icon red">⚡</div>
+          <div class="option-text">
+            <div class="option-label">All-round fitness</div>
+            <div class="option-desc">Endurance, strength, mobility</div>
+          </div>
+        </div>
+        <div class="option-card" onclick="selectOption(this, 'ob-step-1')">
+          <div class="option-icon yellow">🧘</div>
+          <div class="option-text">
+            <div class="option-label">Stay active</div>
+            <div class="option-desc">Move more, feel better daily</div>
+          </div>
+        </div>
+      </div>
+      <div class="onboard-footer">
+        <button class="btn-back" onclick="goTo('screen-welcome')">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+        </button>
+        <button class="btn-primary btn-gradient btn-block" onclick="onboardNext(2)" id="ob1-next" style="opacity:0.4;pointer-events:none">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 2: About You -->
+    <div class="onboard-step" id="ob-step-2">
+      <div class="onboard-eyebrow">Step 2 of 3</div>
+      <div class="onboard-title">Tell us about<br>your experience</div>
+      <div class="onboard-sub">This helps us calibrate your starting point.</div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-label-text">Experience level</span>
+          <span class="slider-value" id="expVal">Intermediate</span>
+        </div>
+        <input type="range" min="0" max="2" value="1" oninput="updateExp(this.value)">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-label-text">Sessions per week</span>
+          <span class="slider-value" id="sessVal">3×</span>
+        </div>
+        <input type="range" min="1" max="7" value="3" oninput="document.getElementById('sessVal').textContent=this.value+'×'">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-label-text">Session length</span>
+          <span class="slider-value" id="lenVal">45 min</span>
+        </div>
+        <input type="range" min="15" max="90" value="45" step="15" oninput="document.getElementById('lenVal').textContent=this.value+' min'">
+      </div>
+      <div class="onboard-footer">
+        <button class="btn-back" onclick="onboardBack(1)">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+        </button>
+        <button class="btn-primary btn-gradient btn-block" onclick="onboardNext(3)">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Schedule -->
+    <div class="onboard-step" id="ob-step-3">
+      <div class="onboard-eyebrow">Step 3 of 3</div>
+      <div class="onboard-title">Which days<br>work for you?</div>
+      <div class="onboard-sub">Pick the days you'd like to train. We'll build around your real schedule.</div>
+      <div class="day-selector" id="daySelector">
+        <div class="day-pill" onclick="toggleDay(this)">Mon</div>
+        <div class="day-pill selected" onclick="toggleDay(this)">Tue</div>
+        <div class="day-pill" onclick="toggleDay(this)">Wed</div>
+        <div class="day-pill selected" onclick="toggleDay(this)">Thu</div>
+        <div class="day-pill" onclick="toggleDay(this)">Fri</div>
+        <div class="day-pill selected" onclick="toggleDay(this)">Sat</div>
+        <div class="day-pill" onclick="toggleDay(this)">Sun</div>
+      </div>
+      <div style="background:var(--paper);border-radius:var(--radius-md);padding:var(--space-md) var(--space-lg);margin-bottom:var(--space-lg);">
+        <div style="font-size:13px;color:var(--ink-60);line-height:1.5;">
+          <strong style="color:var(--ink)">Flexible mode</strong> — if life gets busy, JUVI auto-adjusts your plan. Skip a day, travel for a week — we redistribute the load so you stay on track.
+        </div>
+      </div>
+      <div class="onboard-footer">
+        <button class="btn-back" onclick="onboardBack(2)">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+        </button>
+        <button class="btn-primary btn-gradient btn-block" onclick="goTo('screen-ready')">Build my plan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Plan Ready                  ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-ready" id="screen-ready">
+    <div class="ready-badge">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="ready-title">Your plan<br>is ready.</div>
+    <div class="ready-sub">We've built an 8-week programme tailored to your goals, schedule, and experience level.</div>
+    <div class="plan-preview">
+      <div class="plan-header">
+        <div class="plan-label">Your programme</div>
+        <div class="plan-weeks">8 weeks</div>
+      </div>
+      <div class="plan-stats">
+        <div class="plan-stat">
+          <div class="plan-stat-val">3×</div>
+          <div class="plan-stat-label">per week</div>
+        </div>
+        <div class="plan-stat">
+          <div class="plan-stat-val">45</div>
+          <div class="plan-stat-label">min avg</div>
+        </div>
+        <div class="plan-stat">
+          <div class="plan-stat-val">24</div>
+          <div class="plan-stat-label">sessions</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary btn-gradient btn-block" onclick="enterApp()">
+      Let's go
+    </button>
+    <div style="text-align:center;margin-top:var(--space-md);">
+      <button class="btn-primary btn-outline" style="height:44px;font-size:14px;" onclick="enterApp()">
+        Explore the app first
+      </button>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Dashboard                   ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-dashboard" id="screen-dashboard">
+    <div class="dash-header">
+      <div class="dash-greeting">Good morning</div>
+      <div class="dash-name">Julian 👋</div>
+    </div>
+
+    <div class="week-strip">
+      <div class="week-day completed">
+        <div class="week-day-label">Mon</div>
+        <div class="week-day-num">19</div>
+        <div class="week-day-dot"></div>
+      </div>
+      <div class="week-day completed has-workout">
+        <div class="week-day-label">Tue</div>
+        <div class="week-day-num">20</div>
+        <div class="week-day-dot"></div>
+      </div>
+      <div class="week-day">
+        <div class="week-day-label">Wed</div>
+        <div class="week-day-num">21</div>
+        <div class="week-day-dot"></div>
+      </div>
+      <div class="week-day today has-workout">
+        <div class="week-day-label">Thu</div>
+        <div class="week-day-num">22</div>
+        <div class="week-day-dot"></div>
+      </div>
+      <div class="week-day">
+        <div class="week-day-label">Fri</div>
+        <div class="week-day-num">23</div>
+        <div class="week-day-dot"></div>
+      </div>
+      <div class="week-day has-workout">
+        <div class="week-day-label">Sat</div>
+        <div class="week-day-num">24</div>
+        <div class="week-day-dot"></div>
+      </div>
+      <div class="week-day">
+        <div class="week-day-label">Sun</div>
+        <div class="week-day-num">25</div>
+        <div class="week-day-dot"></div>
+      </div>
+    </div>
+
+    <div class="section-pad">
+      <div class="section-title">Today's session</div>
+      <div class="today-card" onclick="goTo('screen-workout')">
+        <div class="today-type">Week 3 · Day 2</div>
+        <div class="today-title">Tempo Run + Core</div>
+        <div class="today-meta">
+          <div class="today-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            45 min
+          </div>
+          <div class="today-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Moderate
+          </div>
+        </div>
+        <div class="today-cta">
+          Start workout
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value gradient">14.2 <span class="stat-unit">km</span></div>
+          <div class="stat-label">This week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">6 <span class="stat-unit">/ 24</span></div>
+          <div class="stat-label">Sessions done</div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <div class="quick-action" onclick="goTo('screen-trainers')">
+          <div class="quick-action-icon" style="background:var(--sol-bg)">🎯</div>
+          <div class="quick-action-label">Find a<br>trainer</div>
+        </div>
+        <div class="quick-action" onclick="goTo('screen-workout')">
+          <div class="quick-action-icon" style="background:var(--blaze-bg)">📊</div>
+          <div class="quick-action-label">Adjust<br>plan</div>
+        </div>
+        <div class="quick-action" onclick="goTo('screen-community')">
+          <div class="quick-action-icon" style="background:var(--paper)">👥</div>
+          <div class="quick-action-label">Community</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Workout Detail              ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-workout" id="screen-workout">
+    <div class="workout-hero">
+      <button class="workout-back" onclick="goTo('screen-dashboard')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+      </button>
+      <div class="workout-type">Week 3 · Day 2</div>
+      <div class="workout-title">Tempo Run + Core</div>
+      <div class="workout-info">
+        <div class="workout-info-item">⏱ 45 min</div>
+        <div class="workout-info-item">⚡ Moderate</div>
+        <div class="workout-info-item">🏃 5.2 km target</div>
+      </div>
+    </div>
+
+    <div class="adjust-banner" onclick="void(0)">
+      <div class="adjust-text"><strong>Feeling tired?</strong> Tap to adjust intensity</div>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--sol)" stroke-width="2"><path d="M8 4l6 6-6 6"/></svg>
+    </div>
+
+    <div class="section-pad">
+      <div class="section-title">Exercises</div>
+    </div>
+    <div class="exercise-list">
+      <div class="exercise-item">
+        <div class="exercise-num">1</div>
+        <div class="exercise-details">
+          <div class="exercise-name">Warm-up jog</div>
+          <div class="exercise-spec">8 min · easy pace · Zone 1–2</div>
+        </div>
+      </div>
+      <div class="exercise-item">
+        <div class="exercise-num">2</div>
+        <div class="exercise-details">
+          <div class="exercise-name">Tempo intervals</div>
+          <div class="exercise-spec">4 × 4 min at tempo · 2 min recovery</div>
+          <div class="exercise-tag hard">Key session</div>
+        </div>
+      </div>
+      <div class="exercise-item">
+        <div class="exercise-num">3</div>
+        <div class="exercise-details">
+          <div class="exercise-name">Cool-down jog</div>
+          <div class="exercise-spec">5 min · easy pace</div>
+        </div>
+      </div>
+      <div class="exercise-item">
+        <div class="exercise-num">4</div>
+        <div class="exercise-details">
+          <div class="exercise-name">Dead bugs</div>
+          <div class="exercise-spec">3 × 12 reps · slow and controlled</div>
+          <div class="exercise-tag easy">Core</div>
+        </div>
+      </div>
+      <div class="exercise-item">
+        <div class="exercise-num">5</div>
+        <div class="exercise-details">
+          <div class="exercise-name">Plank hold</div>
+          <div class="exercise-spec">3 × 45 sec · engage glutes</div>
+          <div class="exercise-tag easy">Core</div>
+        </div>
+      </div>
+      <div class="exercise-item">
+        <div class="exercise-num">6</div>
+        <div class="exercise-details">
+          <div class="exercise-name">Bird-dogs</div>
+          <div class="exercise-spec">3 × 10 each side</div>
+          <div class="exercise-tag easy">Core</div>
+        </div>
+      </div>
+    </div>
+    <div class="workout-start">
+      <button class="btn-primary btn-gradient btn-block">Begin workout</button>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Trainers                    ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-trainers" id="screen-trainers">
+    <div class="trainers-header">
+      <div class="trainers-title">Find a trainer</div>
+    </div>
+    <div class="filter-strip">
+      <div class="filter-pill active" onclick="toggleFilter(this)">All</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Running</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Strength</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">HYROX</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Nutrition</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Mobility</div>
+    </div>
+    <div class="trainer-grid">
+      <div class="trainer-card" onclick="goTo('screen-trainer-profile')">
+        <div class="trainer-avatar">🏋️</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Sarah K.</div>
+          <div class="trainer-specialty">Running coach · Dublin</div>
+          <div class="trainer-tags">
+            <div class="trainer-tag">Marathon</div>
+            <div class="trainer-tag">5K–10K</div>
+            <div class="trainer-tag">Beginners</div>
+          </div>
+          <div class="trainer-rating">⭐ <strong>4.9</strong> · 127 athletes</div>
+        </div>
+      </div>
+      <div class="trainer-card" onclick="goTo('screen-trainer-profile')">
+        <div class="trainer-avatar">💪</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Marcus J.</div>
+          <div class="trainer-specialty">Strength & HYROX · Dublin</div>
+          <div class="trainer-tags">
+            <div class="trainer-tag">HYROX</div>
+            <div class="trainer-tag">Hybrid</div>
+            <div class="trainer-tag">CrossFit</div>
+          </div>
+          <div class="trainer-rating">⭐ <strong>4.8</strong> · 89 athletes</div>
+        </div>
+      </div>
+      <div class="trainer-card" onclick="goTo('screen-trainer-profile')">
+        <div class="trainer-avatar">🧘</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Aisha T.</div>
+          <div class="trainer-specialty">Mobility & recovery · Online</div>
+          <div class="trainer-tags">
+            <div class="trainer-tag">Yoga</div>
+            <div class="trainer-tag">Rehab</div>
+            <div class="trainer-tag">Flexibility</div>
+          </div>
+          <div class="trainer-rating">⭐ <strong>5.0</strong> · 64 athletes</div>
+        </div>
+      </div>
+      <div class="trainer-card" onclick="goTo('screen-trainer-profile')">
+        <div class="trainer-avatar">🥗</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Liam D.</div>
+          <div class="trainer-specialty">Nutrition coach · Dublin</div>
+          <div class="trainer-tags">
+            <div class="trainer-tag">Meal plans</div>
+            <div class="trainer-tag">Race fueling</div>
+          </div>
+          <div class="trainer-rating">⭐ <strong>4.7</strong> · 52 athletes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Trainer Profile             ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-trainer-profile" id="screen-trainer-profile">
+    <div style="padding:var(--space-md) var(--space-lg) 0;">
+      <button class="workout-back" onclick="goTo('screen-trainers')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <div class="tp-hero">
+      <div class="tp-avatar">🏋️</div>
+      <div class="tp-info">
+        <div class="tp-name">Sarah Kelly</div>
+        <div class="tp-spec">Running coach · Dublin</div>
+        <div class="tp-stats">
+          <div>
+            <div class="tp-stat-val">4.9 ⭐</div>
+            <div class="tp-stat-label">Rating</div>
+          </div>
+          <div>
+            <div class="tp-stat-val">127</div>
+            <div class="tp-stat-label">Athletes</div>
+          </div>
+          <div>
+            <div class="tp-stat-val">6 yr</div>
+            <div class="tp-stat-label">Experience</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tp-bio">
+      NSCA-certified running coach specialising in marathon and half-marathon preparation. I've coached runners from couch-to-5K through to sub-3 marathons. My approach: build consistency first, speed follows. Every plan adapts week-to-week based on how you're actually feeling.
+    </div>
+    <div class="tp-section-title">Specialties</div>
+    <div class="tp-tags">
+      <div class="tp-tag">Marathon training</div>
+      <div class="tp-tag">Half marathon</div>
+      <div class="tp-tag">5K / 10K</div>
+      <div class="tp-tag">Beginners welcome</div>
+      <div class="tp-tag">Injury prevention</div>
+      <div class="tp-tag">Race strategy</div>
+    </div>
+    <div class="tp-section-title">Pricing</div>
+    <div style="padding:0 var(--space-lg);margin-bottom:var(--space-xl);">
+      <div style="display:flex;gap:var(--space-md);">
+        <div style="flex:1;background:var(--sol-bg);border-radius:var(--radius-md);padding:var(--space-md);text-align:center;">
+          <div style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--sol);">€49</div>
+          <div style="font-size:12px;color:var(--ink-60);">per month</div>
+        </div>
+        <div style="flex:1;background:var(--blaze-bg);border-radius:var(--radius-md);padding:var(--space-md);text-align:center;">
+          <div style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--blaze);">€120</div>
+          <div style="font-size:12px;color:var(--ink-60);">3 months</div>
+        </div>
+      </div>
+    </div>
+    <div class="tp-cta">
+      <button class="btn-primary btn-gradient btn-block">Message Sarah</button>
+      <div style="text-align:center;margin-top:var(--space-md);">
+        <button class="btn-primary btn-outline btn-block" style="height:48px;font-size:14px;">Book intro call · Free</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Community                   ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-community" id="screen-community">
+    <div class="community-header">
+      <div class="community-title">Community</div>
+    </div>
+
+    <div class="challenge-card">
+      <div class="challenge-eyebrow">Weekly challenge</div>
+      <div class="challenge-title">August distance challenge</div>
+      <div class="challenge-sub">Run 50 km this month · 238 people joined</div>
+      <div class="challenge-progress">
+        <div class="challenge-progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="feed">
+      <div class="feed-post">
+        <div class="feed-header">
+          <div class="feed-avatar a">🏃</div>
+          <div class="feed-user-info">
+            <div class="feed-username">Aoife M.</div>
+            <div class="feed-time">2h ago</div>
+          </div>
+        </div>
+        <div class="feed-body">First tempo run in weeks and it felt great! The adjusted plan after my travel week was spot on.</div>
+        <div class="feed-activity">
+          <div class="feed-activity-stat">
+            <div class="feed-activity-val">6.4</div>
+            <div class="feed-activity-label">km</div>
+          </div>
+          <div class="feed-activity-stat">
+            <div class="feed-activity-val">32:18</div>
+            <div class="feed-activity-label">time</div>
+          </div>
+          <div class="feed-activity-stat">
+            <div class="feed-activity-val">5:03</div>
+            <div class="feed-activity-label">/km</div>
+          </div>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-action">❤️ 12</button>
+          <button class="feed-action">💬 3</button>
+          <button class="feed-action">🔥 Nice!</button>
+        </div>
+      </div>
+
+      <div class="feed-post">
+        <div class="feed-header">
+          <div class="feed-avatar b">💪</div>
+          <div class="feed-user-info">
+            <div class="feed-username">Conor B.</div>
+            <div class="feed-time">5h ago</div>
+          </div>
+        </div>
+        <div class="feed-body">Just matched with Marcus as my HYROX coach. Training for Dublin in November — anyone else doing doubles?</div>
+        <div class="feed-actions">
+          <button class="feed-action">❤️ 8</button>
+          <button class="feed-action">💬 7</button>
+          <button class="feed-action">🔥 Nice!</button>
+        </div>
+      </div>
+
+      <div class="feed-post">
+        <div class="feed-header">
+          <div class="feed-avatar c">🧘</div>
+          <div class="feed-user-info">
+            <div class="feed-username">Priya S.</div>
+            <div class="feed-time">Yesterday</div>
+          </div>
+        </div>
+        <div class="feed-body">Week 6 done! Changed my schedule to 4 sessions instead of 3 and honestly the shorter sessions work so much better with my commute.</div>
+        <div class="feed-actions">
+          <button class="feed-action">❤️ 21</button>
+          <button class="feed-action">💬 5</button>
+          <button class="feed-action">🔥 Nice!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Profile                     ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-profile" id="screen-profile">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <div class="profile-avatar-letter">J</div>
+      </div>
+      <div class="profile-name">Julian</div>
+      <div class="profile-since">Member since Aug 2026</div>
+    </div>
+
+    <div class="profile-stats">
+      <div class="profile-stat">
+        <div class="profile-stat-val">14</div>
+        <div class="profile-stat-label">Workouts</div>
+      </div>
+      <div class="profile-stat">
+        <div class="profile-stat-val">42</div>
+        <div class="profile-stat-label">km total</div>
+      </div>
+      <div class="profile-stat">
+        <div class="profile-stat-val">86%</div>
+        <div class="profile-stat-label">Adherence</div>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section-title">Training</div>
+      <div class="profile-row">
+        <div class="profile-row-left">
+          <div class="profile-row-icon">🎯</div>
+          <div class="profile-row-label">My goals</div>
+        </div>
+        <div class="profile-row-chevron">›</div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-row-left">
+          <div class="profile-row-icon">📅</div>
+          <div class="profile-row-label">Schedule</div>
+        </div>
+        <div class="profile-row-chevron">›</div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-row-left">
+          <div class="profile-row-icon">⌚</div>
+          <div class="profile-row-label">Connected devices</div>
+        </div>
+        <div class="profile-row-chevron">›</div>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section-title">Account</div>
+      <div class="profile-row">
+        <div class="profile-row-left">
+          <div class="profile-row-icon">👤</div>
+          <div class="profile-row-label">Edit profile</div>
+        </div>
+        <div class="profile-row-chevron">›</div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-row-left">
+          <div class="profile-row-icon">💳</div>
+          <div class="profile-row-label">Subscription</div>
+        </div>
+        <div class="profile-row-chevron">›</div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-row-left">
+          <div class="profile-row-icon">🔔</div>
+          <div class="profile-row-label">Notifications</div>
+        </div>
+        <div class="profile-row-chevron">›</div>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div style="text-align:center;padding:var(--space-md) 0;">
+        <div style="font-family:var(--display);font-size:20px;font-weight:700;background:var(--glow);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;">JUVI</div>
+        <div style="font-size:12px;color:var(--ink-30);">v0.1 prototype</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  Bottom Navigation                   ║
+       ╚══════════════════════════════════════╝ -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" onclick="navTo('screen-dashboard')" data-screen="screen-dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-item" onclick="navTo('screen-workout')" data-screen="screen-workout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <span class="nav-label">Train</span>
+    </button>
+    <button class="nav-item" onclick="navTo('screen-trainers')" data-screen="screen-trainers">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span class="nav-label">Trainers</span>
+    </button>
+    <button class="nav-item" onclick="navTo('screen-community')" data-screen="screen-community">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="nav-label">Community</span>
+    </button>
+    <button class="nav-item" onclick="navTo('screen-profile')" data-screen="screen-profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4-4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profile</span>
+    </button>
+  </nav>
+
+</div><!-- /phone-frame -->
+
+<script>
+/* ═══════════════════════════════════════════
+   JUVI Prototype — Navigation & Interactions
+   ═══════════════════════════════════════════ */
+
+const mainScreens = ['screen-dashboard','screen-workout','screen-trainers','screen-community','screen-profile'];
+
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+
+  // Show/hide nav
+  const nav = document.getElementById('bottomNav');
+  const status = document.getElementById('statusBar');
+  if (mainScreens.includes(screenId) || screenId === 'screen-trainer-profile') {
+    nav.classList.add('visible');
+    status.classList.remove('light');
+  } else {
+    nav.classList.remove('visible');
+    if (screenId === 'screen-welcome') {
+      status.classList.add('light');
+    } else {
+      status.classList.remove('light');
+    }
+  }
+
+  // Update nav active state
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.screen === screenId);
+  });
+}
+
+function navTo(screenId) {
+  goTo(screenId);
+}
+
+// Onboarding
+let currentStep = 1;
+
+function selectOption(el, stepId) {
+  const step = document.getElementById(stepId);
+  step.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  // Enable continue
+  const btn = document.getElementById('ob1-next');
+  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'all'; }
+}
+
+function onboardNext(step) {
+  document.querySelectorAll('.onboard-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('ob-step-' + step).classList.add('active');
+  updateProgress(step);
+  currentStep = step;
+}
+
+function onboardBack(step) {
+  document.querySelectorAll('.onboard-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('ob-step-' + step).classList.add('active');
+  updateProgress(step);
+  currentStep = step;
+}
+
+function updateProgress(step) {
+  const segs = document.querySelectorAll('.progress-seg');
+  segs.forEach((seg, i) => {
+    seg.className = 'progress-seg';
+    if (i < step - 1) seg.classList.add('filled');
+    if (i === step - 1) seg.classList.add('filling');
+  });
+}
+
+function updateExp(val) {
+  const labels = ['Beginner', 'Intermediate', 'Advanced'];
+  document.getElementById('expVal').textContent = labels[val];
+}
+
+function toggleDay(el) {
+  el.classList.toggle('selected');
+}
+
+function toggleFilter(el) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function enterApp() {
+  goTo('screen-dashboard');
+}
+
+// Set initial time
+function updateTime() {
+  const now = new Date();
+  document.getElementById('statusTime').textContent =
+    now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+}
+updateTime();
+setInterval(updateTime, 60000);
+
+// Init: welcome screen with light status bar
+document.getElementById('statusBar').classList.add('light');
+</script>
+</body>
+</html>
