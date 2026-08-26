@@ -56,7 +56,7 @@
   --frame-w: 390px;
   --frame-h: 844px;
   --nav-h: 72px;
-  --status-h: 44px;
+  --status-h: 0px;
 }
 
 /* ── Reset ── */
@@ -96,27 +96,6 @@ body {
       0 8px 24px -4px rgba(0,0,0,0.12);
   }
 }
-
-/* ── Status Bar ── */
-.status-bar {
-  height: var(--status-h);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-lg);
-  font-family: var(--body);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  transition: color 0.3s;
-}
-.status-bar.light { color: var(--white); }
-.status-icons { display: flex; gap: 5px; align-items: center; }
 
 /* ── Screens Container ── */
 .screens {
@@ -262,7 +241,7 @@ body {
 
 .onboard-progress {
   position: absolute;
-  top: var(--status-h);
+  top: 0;
   left: var(--space-lg);
   right: var(--space-lg);
   display: flex;
@@ -298,7 +277,7 @@ body {
   inset: 0;
   display: flex;
   flex-direction: column;
-  padding: calc(var(--status-h) + 40px) var(--space-lg) var(--space-lg);
+  padding: 40px var(--space-lg) var(--space-lg);
   opacity: 0;
   pointer-events: none;
   transform: translateX(30px);
@@ -392,7 +371,90 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-md);
+}
+
+/* Flexible Toggle */
+.flex-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  background: #FFF4EC;
+  border: 2px solid #E8935A;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  margin-bottom: var(--space-lg);
+  transition: background 0.2s, border-color 0.2s;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  font-family: var(--body);
+}
+.flex-toggle.active {
+  background: #E8935A;
+  border-color: #E8935A;
+}
+.flex-toggle.active .flex-toggle-text strong,
+.flex-toggle.active .flex-toggle-text span { color: var(--white); }
+.flex-toggle.active .flex-toggle-check::after { opacity: 1; }
+.flex-toggle-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: rgba(232,147,90,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.flex-toggle.active .flex-toggle-icon { background: rgba(255,255,255,0.2); }
+.flex-toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+.flex-toggle-text strong {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  color: #B56A30;
+  transition: color 0.2s;
+}
+.flex-toggle-text span {
+  font-size: 12px;
+  color: #C07840;
+  transition: color 0.2s;
+}
+.flex-toggle-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #E8935A;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+}
+.flex-toggle.active .flex-toggle-check {
+  background: var(--white);
+  border-color: var(--white);
+}
+.flex-toggle-check::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #E8935A;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 .day-pill {
   width: calc(25% - 6px);
@@ -480,7 +542,7 @@ input[type="range"]::-webkit-slider-thumb {
 .screen-ready {
   display: flex;
   flex-direction: column;
-  padding: calc(var(--status-h) + var(--space-2xl)) var(--space-lg) var(--space-lg);
+  padding: var(--space-2xl) var(--space-lg) var(--space-lg);
 }
 .ready-badge {
   width: 80px;
@@ -566,7 +628,7 @@ input[type="range"]::-webkit-slider-thumb {
    SCREEN: Dashboard
    ══════════════════════════════════════════ */
 .screen-dashboard {
-  padding-top: var(--status-h);
+  padding-top: var(--space-md);
   padding-bottom: calc(var(--nav-h) + var(--space-md));
 }
 .dash-header {
@@ -783,7 +845,7 @@ input[type="range"]::-webkit-slider-thumb {
    SCREEN: Workout Detail
    ══════════════════════════════════════════ */
 .screen-workout {
-  padding-top: var(--status-h);
+  padding-top: var(--space-md);
   padding-bottom: var(--space-2xl);
 }
 .workout-hero {
@@ -905,7 +967,7 @@ input[type="range"]::-webkit-slider-thumb {
    SCREEN: Trainers
    ══════════════════════════════════════════ */
 .screen-trainers {
-  padding-top: var(--status-h);
+  padding-top: var(--space-md);
   padding-bottom: calc(var(--nav-h) + var(--space-md));
 }
 .trainers-header {
@@ -1021,7 +1083,7 @@ input[type="range"]::-webkit-slider-thumb {
    SCREEN: Trainer Profile
    ══════════════════════════════════════════ */
 .screen-trainer-profile {
-  padding-top: var(--status-h);
+  padding-top: var(--space-md);
   padding-bottom: var(--space-2xl);
 }
 .tp-hero {
@@ -1104,7 +1166,7 @@ input[type="range"]::-webkit-slider-thumb {
    SCREEN: Community
    ══════════════════════════════════════════ */
 .screen-community {
-  padding-top: var(--status-h);
+  padding-top: var(--space-md);
   padding-bottom: calc(var(--nav-h) + var(--space-md));
 }
 .community-header {
@@ -1253,7 +1315,7 @@ input[type="range"]::-webkit-slider-thumb {
    SCREEN: Profile
    ══════════════════════════════════════════ */
 .screen-profile {
-  padding-top: var(--status-h);
+  padding-top: var(--space-md);
   padding-bottom: calc(var(--nav-h) + var(--space-md));
 }
 .profile-header {
@@ -1378,15 +1440,6 @@ input[type="range"]::-webkit-slider-thumb {
 <body>
 <div class="phone-frame">
 
-  <!-- Status Bar -->
-  <div class="status-bar" id="statusBar">
-    <span id="statusTime">9:41</span>
-    <div class="status-icons">
-      <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><path d="M1 4.5C3.73 1.5 7.1 0 10.5 0c3.4 0 6.77 1.5 9.5 4.5" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.3"/><path d="M3.5 7C5.5 5 7.87 4 10.5 4c2.63 0 5 1 7 3" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5"/><circle cx="10.5" cy="10" r="2" fill="currentColor"/></svg>
-      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="3" width="3" height="9" rx="0.5" opacity="0.3"/><rect x="4.5" y="2" width="3" height="10" rx="0.5" opacity="0.5"/><rect x="9" y="0" width="3" height="12" rx="0.5" opacity="0.7"/><rect x="13.5" y="0" width="2.5" height="12" rx="0.5"/></svg>
-    </div>
-  </div>
-
   <!-- ╔══════════════════════════════════════╗
        ║  SCREEN: Welcome                     ║
        ╚══════════════════════════════════════╝ -->
@@ -1503,6 +1556,14 @@ input[type="range"]::-webkit-slider-thumb {
         <div class="day-pill selected" onclick="toggleDay(this)">Sat</div>
         <div class="day-pill" onclick="toggleDay(this)">Sun</div>
       </div>
+      <button class="flex-toggle" id="flexToggle" onclick="toggleFlex(this)">
+        <span class="flex-toggle-icon">⚡</span>
+        <span class="flex-toggle-text">
+          <strong>I'm flexible</strong>
+          <span>Let JUVI pick the best days for me</span>
+        </span>
+        <span class="flex-toggle-check" id="flexCheck"></span>
+      </button>
       <div style="background:var(--paper);border-radius:var(--radius-md);padding:var(--space-md) var(--space-lg);margin-bottom:var(--space-lg);">
         <div style="font-size:13px;color:var(--ink-60);line-height:1.5;">
           <strong style="color:var(--ink)">Flexible mode</strong> — if life gets busy, JUVI auto-adjusts your plan. Skip a day, travel for a week — we redistribute the load so you stay on track.
@@ -2071,17 +2132,10 @@ function goTo(screenId) {
 
   // Show/hide nav
   const nav = document.getElementById('bottomNav');
-  const status = document.getElementById('statusBar');
   if (mainScreens.includes(screenId) || screenId === 'screen-trainer-profile') {
     nav.classList.add('visible');
-    status.classList.remove('light');
   } else {
     nav.classList.remove('visible');
-    if (screenId === 'screen-welcome') {
-      status.classList.add('light');
-    } else {
-      status.classList.remove('light');
-    }
   }
 
   // Update nav active state
@@ -2138,6 +2192,23 @@ function toggleDay(el) {
   el.classList.toggle('selected');
 }
 
+function toggleFlex(el) {
+  el.classList.toggle('active');
+  var days = document.querySelectorAll('#daySelector .day-pill');
+  if (el.classList.contains('active')) {
+    days.forEach(function(d) {
+      d.classList.remove('selected');
+      d.style.opacity = '0.4';
+      d.style.pointerEvents = 'none';
+    });
+  } else {
+    days.forEach(function(d) {
+      d.style.opacity = '1';
+      d.style.pointerEvents = 'all';
+    });
+  }
+}
+
 function toggleFilter(el) {
   document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
@@ -2146,18 +2217,6 @@ function toggleFilter(el) {
 function enterApp() {
   goTo('screen-dashboard');
 }
-
-// Set initial time
-function updateTime() {
-  const now = new Date();
-  document.getElementById('statusTime').textContent =
-    now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-}
-updateTime();
-setInterval(updateTime, 60000);
-
-// Init: welcome screen with light status bar
-document.getElementById('statusBar').classList.add('light');
 
 // Fallback: event delegation for all clickable elements
 // (handles cases where inline onclick may not fire)
