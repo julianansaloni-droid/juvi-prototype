@@ -114,10 +114,32 @@ body {
 }
 
 /* ── Screens Container ── */
-.screens {
+
+/* ── Fullscreen Toggle ── */
+.fs-toggle {
   position: absolute;
-  inset: 0;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(28, 24, 22, 0.35);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--white);
+  z-index: 150;
+  transition: background 0.2s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  opacity: 0.7;
 }
+.fs-toggle:hover { opacity: 1; background: rgba(28, 24, 22, 0.55); }
+.fs-toggle:active { transform: scale(0.9); }
 
 .screen {
   position: absolute;
@@ -2077,6 +2099,52 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ── Search Bar ── */
+
+/* ── Compose Button ── */
+
+/* ── Tip Card ── */
+.tip-card {
+  background: var(--sol-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  border-left: 3px solid var(--sol);
+}
+.tip-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--space-sm);
+}
+.tip-label {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sol);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tip-text {
+  font-size: 13px;
+  color: var(--ink-60);
+  line-height: 1.5;
+}
+.compose-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glow);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--white);
+  box-shadow: 0 2px 12px rgba(196,66,53,0.2);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 0.15s;
+}
+.compose-btn:active { transform: scale(0.9); }
 .search-bar {
   display: flex;
   align-items: center;
@@ -2402,6 +2470,32 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: var(--space-sm);
 }
 
+/* ── Race Countdown ── */
+.countdown-strip {
+  padding: var(--space-sm) var(--space-lg);
+}
+.countdown-event {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--blaze-bg);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+}
+.countdown-label {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blaze);
+  flex: 1;
+}
+.countdown-days {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blaze);
+}
+
 /* ── Toast Notification ── */
 .toast {
   position: absolute;
@@ -2710,6 +2804,15 @@ input[type="range"]::-webkit-slider-thumb {
 <body>
 <div class="phone-frame">
 
+  <!-- Fullscreen Toggle -->
+  <button class="fs-toggle" id="fsToggle" onclick="toggleFullscreen()" title="Toggle fullscreen">
+    <svg id="fsExpand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3"/></svg>
+    <svg id="fsCompress" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M4 14h4v4M20 10h-4V6M14 10h4V6M4 14h4v4" transform="rotate(0)"/><path d="M15 3v6h6M9 21v-6H3M21 9h-6V3M3 15h6v6"/></svg>
+  </button>
+
+  <!-- Global Toast -->
+  <div class="toast" id="globalToast"><div class="toast-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div><span id="globalToastMsg">Saved</span></div>
+
   <!-- ╔══════════════════════════════════════╗
        ║  SCREEN: Welcome                     ║
        ╚══════════════════════════════════════╝ -->
@@ -2922,13 +3025,19 @@ input[type="range"]::-webkit-slider-thumb {
        ║  SCREEN: Dashboard                   ║
        ╚══════════════════════════════════════╝ -->
   <div class="screen screen-dashboard" id="screen-dashboard">
-    <!-- Toast -->
-    <div class="toast" id="appToast"><div class="toast-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><span id="toastMsg">Changes saved</span></div>
-
     <div class="dash-header">
       <div class="dash-greeting" id="dashGreeting">Good morning</div>
       <div class="dash-name">Julian</div>
       <div class="streak-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> 5-day streak</div>
+    </div>
+
+    <!-- Race Countdown -->
+    <div class="countdown-strip">
+      <div class="countdown-event">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blaze)" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>
+        <span class="countdown-label">Dublin Marathon</span>
+        <span class="countdown-days" id="countdownDays">60 days</span>
+      </div>
     </div>
 
     <div class="week-strip">
@@ -3070,9 +3179,16 @@ input[type="range"]::-webkit-slider-thumb {
           <span class="chart-legend-item"><span class="chart-dot rest-dot"></span>Rest</span>
         </div>
       </div>
-    </div>
 
-    <!-- Travel Adjustment Modal -->
+      <!-- Coach Tip -->
+      <div class="tip-card" style="margin-top:var(--space-xl);">
+        <div class="tip-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sol)" stroke-width="2" stroke-linecap="round"><path d="M12 2a7 7 0 017 7c0 3-2 5-3 7h-8c-1-2-3-4-3-7a7 7 0 017-7z"/><path d="M9 18h6M10 22h4"/></svg>
+        <span class="tip-label">Today's tip</span>
+        </div>
+        <div class="tip-text">Your tempo run today will feel harder in the first 2 intervals. That's normal — your body needs 8–10 minutes to hit its rhythm. Trust the pace and it'll click by interval 3.</div>
+      </div>
+    </div>
     <div class="modal-overlay" id="travelModal" onclick="closeModalOnBackdrop(event)">
       <div class="modal-sheet">
         <div class="modal-handle"></div>
@@ -3472,7 +3588,7 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="trainers-title">Find a trainer</div>
       <div class="search-bar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink-30)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" class="search-input" placeholder="Search by name, specialty...">
+        <input type="text" class="search-input" placeholder="Search by name, specialty..." oninput="filterTrainers(this.value)">
       </div>
     </div>
     <div class="filter-strip">
@@ -3638,10 +3754,20 @@ input[type="range"]::-webkit-slider-thumb {
        ╚══════════════════════════════════════╝ -->
   <div class="screen screen-community" id="screen-community">
     <div class="community-header">
-      <div class="community-title">Community</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="community-title" style="margin-bottom:0;">Community</div>
+        <button class="compose-btn" onclick="showToast('Post composer coming soon')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="filter-strip" style="padding:var(--space-sm) 0;">
+        <div class="filter-pill active" onclick="toggleFilter(this)">Feed</div>
+        <div class="filter-pill" onclick="toggleFilter(this)">Challenges</div>
+        <div class="filter-pill" onclick="toggleFilter(this)">My circle</div>
+      </div>
     </div>
 
-    <div class="challenge-card">
+    <div class="challenge-card bounce-tap" onclick="showToast('You\'re 42% of the way there!')">
       <div class="challenge-eyebrow">WEEKLY CHALLENGE</div>
       <div class="challenge-title">August distance challenge</div>
       <div class="challenge-sub">Run 50 km this month · 238 people joined</div>
@@ -3737,7 +3863,15 @@ input[type="range"]::-webkit-slider-thumb {
         <div class="profile-stat-label">km total</div>
       </div>
       <div class="profile-stat">
-        <div class="profile-stat-val">86%</div>
+        <div class="profile-stat-val" style="position:relative;display:flex;align-items:center;justify-content:center;">
+          <svg width="48" height="48" viewBox="0 0 48 48" style="position:absolute;">
+            <circle cx="24" cy="24" r="20" fill="none" stroke="var(--ink-10)" stroke-width="3"/>
+            <circle cx="24" cy="24" r="20" fill="none" stroke="url(#profileGrad)" stroke-width="3" stroke-linecap="round"
+              stroke-dasharray="125.6" stroke-dashoffset="17.6" transform="rotate(-90 24 24)"/>
+            <defs><linearGradient id="profileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D9A62E"/><stop offset="100%" stop-color="#C44235"/></linearGradient></defs>
+          </svg>
+          86%
+        </div>
         <div class="profile-stat-label">Adherence</div>
       </div>
     </div>
@@ -4291,7 +4425,20 @@ function toggleFilter(el) {
 }
 
 function enterApp() {
-  goTo('screen-dashboard');
+  // Brief loading pulse before showing dashboard
+  var ready = document.getElementById('screen-ready');
+  if (ready) {
+    var btn = ready.querySelector('.btn-primary');
+    if (btn) {
+      btn.textContent = 'Loading...';
+      btn.style.opacity = '0.7';
+    }
+  }
+  setTimeout(function() {
+    goTo('screen-dashboard');
+    // Init nav indicator to first tab
+    moveIndicator(0, document.querySelectorAll('.nav-item').length);
+  }, 600);
 }
 
 /* ── Build Plan (reflects onboarding choices) ── */
@@ -4439,8 +4586,8 @@ function selectRace(el) {
 
 /* ── Toast Notifications ── */
 function showToast(msg) {
-  var toast = document.getElementById('appToast');
-  var toastMsg = document.getElementById('toastMsg');
+  var toast = document.getElementById('globalToast');
+  var toastMsg = document.getElementById('globalToastMsg');
   if (!toast || !toastMsg) return;
   toastMsg.textContent = msg;
   toast.classList.add('show');
@@ -4472,6 +4619,65 @@ function updateGreeting() {
 }
 updateGreeting();
 
+/* ── Race Countdown ── */
+function updateCountdown() {
+  var raceDate = new Date('2026-10-26');
+  var today = new Date();
+  var diff = Math.ceil((raceDate - today) / (1000 * 60 * 60 * 24));
+  var el = document.getElementById('countdownDays');
+  if (el && diff > 0) el.textContent = diff + ' days';
+}
+updateCountdown();
+
+/* ── Fullscreen ── */
+function toggleFullscreen() {
+  var doc = document.documentElement;
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    if (doc.requestFullscreen) {
+      doc.requestFullscreen();
+    } else if (doc.webkitRequestFullscreen) {
+      doc.webkitRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+}
+
+function updateFsIcon() {
+  var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  var expand = document.getElementById('fsExpand');
+  var compress = document.getElementById('fsCompress');
+  if (expand) expand.style.display = isFs ? 'none' : 'block';
+  if (compress) compress.style.display = isFs ? 'block' : 'none';
+}
+document.addEventListener('fullscreenchange', updateFsIcon);
+document.addEventListener('webkitfullscreenchange', updateFsIcon);
+
+/* ── Trainer Search Filter ── */
+function filterTrainers(query) {
+  var q = query.toLowerCase().trim();
+  var cards = document.querySelectorAll('.trainer-card');
+  cards.forEach(function(card) {
+    var text = card.textContent.toLowerCase();
+    if (!q || text.indexOf(q) !== -1) {
+      card.style.display = '';
+      card.style.opacity = '1';
+    } else {
+      card.style.opacity = '0';
+      var c2 = card;
+      setTimeout(function() { if (c2.style.opacity === '0') c2.style.display = 'none'; }, 200);
+    }
+  });
+  // Show "no results" if all hidden
+  var visible = Array.from(cards).filter(function(c3) { return c3.style.display !== 'none'; });
+  var noResults = document.getElementById('trainerNoResults');
+  if (noResults) noResults.style.display = visible.length === 0 ? 'block' : 'none';
+}
+
 /* ── Reset ── */
 function resetApp() {
   if (!wasTap()) return;
@@ -4485,6 +4691,10 @@ function resetApp() {
   document.querySelectorAll('.option-card').forEach(function(c) { c.classList.remove('selected'); });
   var ob1next = document.getElementById('ob1-next');
   if (ob1next) { ob1next.style.opacity = '0.4'; ob1next.style.pointerEvents = 'none'; }
+
+  // Close race picker
+  var picker = document.getElementById('racePicker');
+  if (picker) picker.classList.remove('open');
 
   // Reset day pills
   document.querySelectorAll('#daySelector .day-pill').forEach(function(d) {
