@@ -1,76 +1,88 @@
 # JUVI — Fitness, your way
 
-> Interactive prototype for a personalized fitness app with AI-powered training plans, trainer marketplace, and community features.
+Interactive prototype for a personalized fitness app with AI-powered training plans, trainer marketplace, and community features.
 
-**Status:** v0.2 prototype · 15 interactive screens  
-**Stack:** Vanilla HTML/CSS/JS (no build step, no dependencies)  
-**Deploy:** GitHub Pages — push and enable Pages on `main`
+**Version:** v0.3 · 18 screens · 56 features  
+**Stack:** Vanilla HTML/CSS/JS — no build step, no dependencies  
+**Deploy:** GitHub Pages (include the `.nojekyll` file)
 
-## What this covers
+---
 
-### Onboarding (3 steps)
-Goal selection with race picker sub-flow (Dublin Marathon, Half, 5K, custom) → experience & frequency sliders → day picker with "I'm flexible" toggle → personalized plan summary
+## Screens
+
+### Onboarding (3 steps + plan summary)
+Goal selection with race picker sub-flow (Dublin Marathon, Half, Parkrun 5K, custom) → experience level & frequency sliders → day picker with "I'm flexible" toggle → dynamic plan summary reflecting all choices, built by JUVI AI
 
 ### Dashboard
-Dynamic greeting, 5-day streak badge, today's workout card with shimmer, weekly calendar strip, stats (distance + sessions), quick actions (find trainer, adjust plan, community), weekly progress bar chart
+Time-aware greeting · 5-day streak badge · Dublin Marathon countdown (live) · weekly calendar strip with workout indicators · today's workout card with shimmer · distance + session stats · quick actions (trainers, adjust plan, community) · weekly progress bar chart with legend · coach tip card · travel schedule adjustment modal
 
 ### Training
-Full weekly plan view with week selector, day-by-day breakdown (completed/today/upcoming/rest), workout detail with exercise list, "Feeling tired?" intensity adjustment modal (−20% / planned / +15%), active workout screen with animated timer ring and pause/skip controls, workout complete screen with stats, pace splits, emoji feedback
+Weekly plan with 8-week selector · day-by-day cards (completed/today/upcoming/rest) with difficulty tags · workout detail with 6-exercise list · "Feeling tired?" intensity modal (−20% / planned / +15%) · active workout with animated gradient timer ring, pause/skip/previous controls · workout complete with stats, pace splits, emoji feedback, share to community
 
 ### Trainers
-Search bar, filter pills (Running, Strength, HYROX, Nutrition, Mobility), trainer cards with ratings, full trainer profile with bio, specialties, pricing, 3 reviews, "Message" chat screen with realistic conversation, "Book intro call" with toast confirmation
+Search bar with live filtering · category filter pills · 4 trainer cards with initial avatars, ratings, tags · full trainer profile with bio, specialties, pricing tiers, 3 reviews · "Message" opens chat screen with realistic conversation · "Book intro call" with toast confirmation
 
 ### Community
-Weekly challenge banner with progress bar, social feed with activity cards (distance, time, pace), interactive like toggle with count animation, notification badge on tab
+Feed/Challenges/My circle tabs · compose button · weekly challenge banner with progress · social feed with activity cards (distance, time, pace) · interactive SVG heart likes with count · comment and reaction icons
 
 ### Profile & Settings
-Stats overview (workouts, km, adherence), horizontally scrollable achievement badges (earned + locked), recent workout history, connected devices screen (Apple Watch, Garmin, Strava, Apple Health with toggles), subscription screen (Free / Pro €9.99 / Pro+Coach €29.99), reset to re-run onboarding
+Stats with SVG adherence ring · horizontally scrollable achievement badges (3 earned, 3 locked) · recent workout history with "See all" → full history screen with filters · goal progress screen with large progress ring, 5-phase milestone timeline, training totals · notifications screen (5 notifications, unread highlighting) · connected devices (Apple Watch, Garmin, Strava, Apple Health with toggles) · subscription plans (Free / Pro €9.99 / Pro+Coach €29.99) · reset to redo onboarding
 
-### Design system
+---
 
-| Token | Hex | Role |
-|-------|-----|------|
-| Sol | `#D9A62E` | Primary — warm amber |
-| Blaze | `#C44235` | Accent — warm red |
-| Peach | `#E8935A` | Secondary — warm orange |
+## Design system
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| Sol | `#D9A62E` | Primary warm amber |
+| Blaze | `#C44235` | Accent warm red |
+| Peach | `#E8935A` | Secondary warm orange |
 | Chalk | `#FAFAF7` | Background |
-| Ink | `#1C1816` | Text |
-| Glow | Sol → Blaze | Gradient on CTAs, progress, badges |
-| Display | Space Grotesk | Headlines, numbers, labels |
-| Body | DM Sans | Everything else |
+| Ink | `#1C1816` | Primary text |
+| Glow | Sol → Blaze | Gradient — CTAs, progress, badges |
+| Display | Space Grotesk | Headlines, numbers |
+| Body | DM Sans | Body text |
 
-### Interactions
-- Animated gradient on welcome screen
-- Staggered entrance animations on all lists
+98 SVG stroke icons · Initial-based avatars · No emoji in UI (except workout feedback mood selector)
+
+## Interactions & polish
+
+- Animated welcome gradient (3-color shift)
+- Staggered entrance animations on lists
 - Slide transitions for drill-in, cross-fade for tab switches
 - Sliding gradient indicator on bottom nav
 - Shimmer sweep on today's workout card
-- Scroll-guard prevents accidental taps while scrolling
-- Toast notifications on key actions
+- Scroll guard prevents accidental taps while scrolling
+- Toast notifications on all screens
 - Pulsing timer ring on active workout
+- Bottom sheet modals with backdrop blur
+- Fullscreen toggle (top-right corner)
+- PWA meta tags (theme-color, apple-mobile-web-app)
+- All inputs have aria-labels
+- Smooth scroll behavior
 
-## Deploy to GitHub Pages
+## Deploy
 
 ```bash
 gh repo create juvi-prototype --public
 git init && git add .
-git commit -m "v0.2 prototype"
+git commit -m "v0.3 — 18 screens, 56 features"
 git branch -M main
 git remote add origin git@github.com:YOUR_USER/juvi-prototype.git
 git push -u origin main
 # Settings → Pages → Source: main → / (root) → Save
 ```
 
-Live at `https://YOUR_USER.github.io/juvi-prototype/`
+Don't forget `.nojekyll` in the repo root.
 
-Don't forget the `.nojekyll` file (included) to bypass Jekyll processing.
+Live at `https://YOUR_USER.github.io/juvi-prototype/`
 
 ## Product concept
 
-**Monetization:** Freemium + trainer marketplace cut  
+**Model:** Freemium + trainer marketplace cut  
 **Differentiator:** AI-first adaptive training where human trainers optionally plug in  
-**Target:** Millennials & Gen Z in urban markets (starting Dublin)  
-**Pricing model:** Free (basic) → Pro €9.99/mo (AI plans) → Pro+Coach €29.99/mo (includes trainer)
+**Target:** Millennials & Gen Z in urban markets, starting Dublin  
+**Pricing:** Free → Pro €9.99/mo → Pro+Coach €29.99/mo
 
 ---
 

@@ -4,7 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>JUVI — Fitness, your way</title>
+<meta name="theme-color" content="#FAFAF7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="theme-color" content="#FAFAF7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
 <style>
@@ -166,6 +172,7 @@ body {
   z-index: 1;
 }
 .screen::-webkit-scrollbar { display: none; }
+.screen { scroll-behavior: smooth; }
 
 /* ── Modal / Overlay ── */
 .modal-overlay {
@@ -2679,6 +2686,102 @@ input[type="range"]::-webkit-slider-thumb {
 .device-toggle.on::after { transform: translateX(18px); }
 
 /* ── Chat Preview ── */
+
+/* ── Goal Milestones ── */
+.milestone-list {
+  display: flex;
+  flex-direction: column;
+}
+.milestone {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding-bottom: var(--space-lg);
+  position: relative;
+}
+.milestone:last-child { padding-bottom: 0; }
+.milestone-line {
+  position: absolute;
+  left: 11px;
+  top: 24px;
+  bottom: 0;
+  width: 2px;
+  background: var(--ink-10);
+}
+.milestone:last-child .milestone-line { display: none; }
+.milestone.done .milestone-line { background: var(--sol-soft); }
+.milestone-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+}
+.done-dot { background: var(--sol-bg); border: 2px solid var(--sol); }
+.active-dot {
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 0 0 0 4px rgba(28,24,22,0.1);
+}
+.active-dot::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--white);
+}
+.upcoming-dot { background: var(--white); border: 2px solid var(--ink-10); }
+.milestone-content { flex: 1; padding-top: 2px; }
+.milestone-label {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.upcoming-ms .milestone-label { color: var(--ink-30); }
+.milestone-desc {
+  font-size: 12px;
+  color: var(--ink-60);
+}
+.upcoming-ms .milestone-desc { color: var(--ink-30); }
+.milestone-check {
+  padding-top: 2px;
+}
+
+/* ── Notifications ── */
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--ink-10);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item.unread { background: var(--sol-bg); margin: 0 calc(-1 * var(--space-lg)); padding-left: var(--space-lg); padding-right: var(--space-lg); border-radius: var(--radius-sm); border-bottom: none; margin-bottom: 2px; }
+.notif-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.notif-content { flex: 1; }
+.notif-text {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.notif-text strong { font-weight: 600; }
+.notif-time {
+  font-size: 12px;
+  color: var(--ink-30);
+  margin-top: 2px;
+}
 .screen-chat {
   padding-top: var(--space-md);
   padding-bottom: var(--space-2xl);
@@ -2912,21 +3015,21 @@ input[type="range"]::-webkit-slider-thumb {
           <span class="slider-label-text">Experience level</span>
           <span class="slider-value" id="expVal">Intermediate</span>
         </div>
-        <input type="range" min="0" max="2" value="1" oninput="updateExp(this.value)">
+        <input type="range" min="0" max="2" value="1" aria-label="Experience level" oninput="updateExp(this.value)">
       </div>
       <div class="slider-group">
         <div class="slider-label">
           <span class="slider-label-text">Sessions per week</span>
           <span class="slider-value" id="sessVal">3×</span>
         </div>
-        <input type="range" min="1" max="7" value="3" oninput="document.getElementById('sessVal').textContent=this.value+'×'">
+        <input type="range" min="1" max="7" value="3" aria-label="Sessions per week" oninput="document.getElementById('sessVal').textContent=this.value+'×'">
       </div>
       <div class="slider-group">
         <div class="slider-label">
           <span class="slider-label-text">Session length</span>
           <span class="slider-value" id="lenVal">45 min</span>
         </div>
-        <input type="range" min="15" max="90" value="45" step="15" oninput="document.getElementById('lenVal').textContent=this.value+' min'">
+        <input type="range" min="15" max="90" value="45" step="15" aria-label="Session length" oninput="document.getElementById('lenVal').textContent=this.value+' min'">
       </div>
       <div class="onboard-footer">
         <button class="btn-back" onclick="onboardBack(1)">
@@ -3576,7 +3679,7 @@ input[type="range"]::-webkit-slider-thumb {
       </div>
 
       <button class="btn-primary btn-block" style="background:var(--white);color:var(--ink);" onclick="goTo('screen-dashboard')" data-go="screen-dashboard">Done</button>
-      <button class="btn-primary btn-block" style="background:rgba(255,255,255,0.1);color:var(--white);margin-top:var(--space-sm);" onclick="goTo('screen-community')" data-go="screen-community">Share to community</button>
+      <button class="btn-primary btn-block" style="background:rgba(255,255,255,0.1);color:var(--white);margin-top:var(--space-sm);" onclick="showToast('Workout shared!');setTimeout(function(){goTo('screen-community')},800)">Share to community</button>
     </div>
   </div>
 
@@ -3588,7 +3691,7 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="trainers-title">Find a trainer</div>
       <div class="search-bar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink-30)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" class="search-input" placeholder="Search by name, specialty..." oninput="filterTrainers(this.value)">
+        <input type="text" class="search-input" placeholder="Search by name, specialty..." aria-label="Search trainers" oninput="filterTrainers(this.value)">
       </div>
     </div>
     <div class="filter-strip">
@@ -3846,7 +3949,7 @@ input[type="range"]::-webkit-slider-thumb {
        ╚══════════════════════════════════════╝ -->
   <div class="screen screen-profile" id="screen-profile">
     <div class="profile-header">
-      <div class="profile-avatar">
+      <div class="profile-avatar" onclick="showToast('Photo upload coming soon')" style="cursor:pointer;">
         <div class="profile-avatar-letter">J</div>
       </div>
       <div class="profile-name">Julian</div>
@@ -3909,7 +4012,11 @@ input[type="range"]::-webkit-slider-thumb {
 
     <!-- Recent Activity -->
     <div class="profile-section">
-      <div class="profile-section-title">Recent activity</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="profile-section-title" style="margin:0;">Recent activity</div>
+        <div onclick="goTo('screen-history')" data-go="screen-history" style="font-family:var(--display);font-size:13px;font-weight:600;color:var(--blaze);cursor:pointer;">See all</div>
+      </div>
+      <div style="height:var(--space-md);"></div>
       <div class="history-item">
         <div class="history-dot run"></div>
         <div class="history-info">
@@ -3958,7 +4065,7 @@ input[type="range"]::-webkit-slider-thumb {
 
     <div class="profile-section">
       <div class="profile-section-title">Training</div>
-      <div class="profile-row" onclick="goTo('screen-onboarding')" data-go="screen-onboarding">
+      <div class="profile-row" onclick="goTo('screen-goal')" data-go="screen-goal">
         <div class="profile-row-left">
           <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
           <div class="profile-row-label">My goals</div>
@@ -3983,7 +4090,7 @@ input[type="range"]::-webkit-slider-thumb {
 
     <div class="profile-section">
       <div class="profile-section-title">Account</div>
-      <div class="profile-row" onclick="showToast('Edit profile coming soon')">
+      <div class="profile-row" onclick="showToast('Profile editor coming in v1')">
         <div class="profile-row-left">
           <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
           <div class="profile-row-label">Edit profile</div>
@@ -3997,7 +4104,7 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
         <div class="profile-row-chevron">›</div>
       </div>
-      <div class="profile-row" onclick="showToast('Notifications settings coming soon')">
+      <div class="profile-row" onclick="goTo('screen-notifications')" data-go="screen-notifications">
         <div class="profile-row-left">
           <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
           <div class="profile-row-label">Notifications</div>
@@ -4007,7 +4114,7 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
 
     <div class="profile-section">
-      <button class="reset-btn" id="resetBtn">
+      <button class="reset-btn" id="resetBtn" onclick="resetApp()">
         <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 005.6 5.6L1 10M3.5 15a9 9 0 0014.9 4.4L23 14"/></svg></span>
         Reset app &amp; redo onboarding
       </button>
@@ -4141,6 +4248,274 @@ input[type="range"]::-webkit-slider-thumb {
   </div>
 
   <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Goal Progress               ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-goal" id="screen-goal">
+    <div style="padding:var(--space-md) var(--space-lg) 0;">
+      <button class="workout-back" onclick="goTo('screen-profile')" data-go="screen-profile">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <div style="padding:var(--space-md) var(--space-lg);">
+      <div class="trainers-title">Dublin Marathon</div>
+      <div style="font-size:14px;color:var(--ink-60);margin-bottom:var(--space-xl);">Oct 26, 2026 · 42.2 km</div>
+
+      <!-- Big progress ring -->
+      <div style="display:flex;justify-content:center;margin-bottom:var(--space-xl);">
+        <div style="position:relative;width:180px;height:180px;">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle cx="90" cy="90" r="78" fill="none" stroke="var(--ink-10)" stroke-width="8"/>
+            <circle cx="90" cy="90" r="78" fill="none" stroke="url(#goalGrad)" stroke-width="8" stroke-linecap="round"
+              stroke-dasharray="490" stroke-dashoffset="343" transform="rotate(-90 90 90)"/>
+            <defs><linearGradient id="goalGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D9A62E"/><stop offset="100%" stop-color="#C44235"/></linearGradient></defs>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="font-family:var(--display);font-size:36px;font-weight:700;">30%</div>
+            <div style="font-size:13px;color:var(--ink-60);">plan complete</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Milestones -->
+      <div class="section-title" style="margin-bottom:var(--space-md);">Milestones</div>
+      <div class="milestone-list">
+        <div class="milestone done">
+          <div class="milestone-line"></div>
+          <div class="milestone-dot done-dot"></div>
+          <div class="milestone-content">
+            <div class="milestone-label">Base building</div>
+            <div class="milestone-desc">Weeks 1–2 · Build consistency</div>
+          </div>
+          <div class="milestone-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sol)" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        </div>
+        <div class="milestone active-ms">
+          <div class="milestone-line"></div>
+          <div class="milestone-dot active-dot"></div>
+          <div class="milestone-content">
+            <div class="milestone-label">Speed development</div>
+            <div class="milestone-desc">Weeks 3–4 · Tempo + intervals</div>
+          </div>
+          <div style="font-family:var(--display);font-size:12px;font-weight:600;color:var(--blaze);">NOW</div>
+        </div>
+        <div class="milestone upcoming-ms">
+          <div class="milestone-line"></div>
+          <div class="milestone-dot upcoming-dot"></div>
+          <div class="milestone-content">
+            <div class="milestone-label">Endurance peak</div>
+            <div class="milestone-desc">Weeks 5–6 · Long runs increase</div>
+          </div>
+        </div>
+        <div class="milestone upcoming-ms">
+          <div class="milestone-line"></div>
+          <div class="milestone-dot upcoming-dot"></div>
+          <div class="milestone-content">
+            <div class="milestone-label">Race sharpening</div>
+            <div class="milestone-desc">Week 7 · Race-pace sessions</div>
+          </div>
+        </div>
+        <div class="milestone upcoming-ms">
+          <div class="milestone-dot upcoming-dot"></div>
+          <div class="milestone-content">
+            <div class="milestone-label">Taper &amp; race</div>
+            <div class="milestone-desc">Week 8 · Reduce volume, race day</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key stats -->
+      <div class="section-title" style="margin-top:var(--space-xl);margin-bottom:var(--space-md);">Training totals</div>
+      <div class="stats-row" style="margin-top:0;">
+        <div class="stat-card">
+          <div class="stat-value gradient">42 <span class="stat-unit">km</span></div>
+          <div class="stat-label">Total distance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">5:08 <span class="stat-unit">/km</span></div>
+          <div class="stat-label">Avg pace</div>
+        </div>
+      </div>
+      <div class="stats-row" style="margin-top:var(--space-md);">
+        <div class="stat-card">
+          <div class="stat-value gradient">14</div>
+          <div class="stat-label">Sessions done</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">22.4 <span class="stat-unit">km</span></div>
+          <div class="stat-label">Longest run</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Notifications               ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-notifications" id="screen-notifications">
+    <div style="padding:var(--space-md) var(--space-lg) 0;">
+      <button class="workout-back" onclick="goTo('screen-profile')" data-go="screen-profile">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <div style="padding:var(--space-md) var(--space-lg);">
+      <div class="trainers-title">Notifications</div>
+    </div>
+    <div style="padding:0 var(--space-lg);">
+      <div class="notif-item unread">
+        <div class="notif-icon" style="background:var(--blaze-bg);color:var(--blaze);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        </div>
+        <div class="notif-content">
+          <div class="notif-text"><strong>5-day streak!</strong> You're on fire — keep it going.</div>
+          <div class="notif-time">2 hours ago</div>
+        </div>
+      </div>
+      <div class="notif-item unread">
+        <div class="notif-icon" style="background:var(--sol-bg);color:var(--sol);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div class="notif-content">
+          <div class="notif-text"><strong>Tempo Run + Core</strong> is ready for today. 45 min, moderate intensity.</div>
+          <div class="notif-time">6 hours ago</div>
+        </div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-icon" style="background:#E8F0E8;color:#4A7A4A;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div class="notif-content">
+          <div class="notif-text"><strong>Aoife M.</strong> liked your workout.</div>
+          <div class="notif-time">Yesterday</div>
+        </div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-icon" style="background:var(--paper);color:var(--ink-60);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>
+        </div>
+        <div class="notif-content">
+          <div class="notif-text"><strong>August challenge</strong> — you're 42% there. 29 km to go.</div>
+          <div class="notif-time">Yesterday</div>
+        </div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-icon" style="background:#FFF4EC;color:#E8935A;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <div class="notif-content">
+          <div class="notif-text"><strong>Sarah Kelly</strong> sent you a message about your Thursday call.</div>
+          <div class="notif-time">2 days ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Workout History             ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-history" id="screen-history">
+    <div style="padding:var(--space-md) var(--space-lg) 0;">
+      <button class="workout-back" onclick="goTo('screen-profile')" data-go="screen-profile">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <div style="padding:var(--space-md) var(--space-lg) 0;">
+      <div class="trainers-title">Workout history</div>
+      <div class="filter-strip" style="padding:var(--space-sm) 0 var(--space-md);">
+        <div class="filter-pill active" onclick="toggleFilter(this)">All</div>
+        <div class="filter-pill" onclick="toggleFilter(this)">Runs</div>
+        <div class="filter-pill" onclick="toggleFilter(this)">Strength</div>
+        <div class="filter-pill" onclick="toggleFilter(this)">Recovery</div>
+      </div>
+    </div>
+    <div style="padding:0 var(--space-lg) calc(var(--nav-h) + var(--space-md));">
+      <div style="font-family:var(--display);font-size:13px;font-weight:600;color:var(--ink-60);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-md);">This week</div>
+      <div class="history-item" onclick="goTo('screen-workout')" data-go="screen-workout" style="cursor:pointer;">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">Intervals</div>
+          <div class="history-date">Tuesday · 6.2 km · 40 min</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val" style="color:var(--blaze)">5:02 /km</div>
+        </div>
+      </div>
+      <div class="history-item" onclick="goTo('screen-workout')" data-go="screen-workout" style="cursor:pointer;">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">Easy run</div>
+          <div class="history-date">Monday · 5.8 km · 35 min</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val">5:31 /km</div>
+        </div>
+      </div>
+
+      <div style="font-family:var(--display);font-size:13px;font-weight:600;color:var(--ink-60);text-transform:uppercase;letter-spacing:0.06em;margin:var(--space-lg) 0 var(--space-md);">Last week</div>
+      <div class="history-item" onclick="goTo('screen-workout')" data-go="screen-workout" style="cursor:pointer;">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">Long run</div>
+          <div class="history-date">Saturday · 9.1 km · 58 min</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val">5:44 /km</div>
+        </div>
+      </div>
+      <div class="history-item" onclick="goTo('screen-workout')" data-go="screen-workout" style="cursor:pointer;">
+        <div class="history-dot strength"></div>
+        <div class="history-info">
+          <div class="history-title">Strength + Core</div>
+          <div class="history-date">Thursday · 30 min</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val" style="color:var(--sol)">6 exercises</div>
+        </div>
+      </div>
+      <div class="history-item" onclick="goTo('screen-workout')" data-go="screen-workout" style="cursor:pointer;">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">Tempo run</div>
+          <div class="history-date">Tuesday · 6.5 km · 38 min</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val" style="color:var(--blaze)">4:48 /km</div>
+        </div>
+      </div>
+      <div class="history-item" onclick="goTo('screen-workout')" data-go="screen-workout" style="cursor:pointer;">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">Recovery jog</div>
+          <div class="history-date">Monday · 4.2 km · 28 min</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val">6:10 /km</div>
+        </div>
+      </div>
+
+      <div style="font-family:var(--display);font-size:13px;font-weight:600;color:var(--ink-60);text-transform:uppercase;letter-spacing:0.06em;margin:var(--space-lg) 0 var(--space-md);">Week 1</div>
+      <div class="history-item" onclick="goTo('screen-workout')" data-go="screen-workout" style="cursor:pointer;">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">Easy run</div>
+          <div class="history-date">Saturday · 5.0 km · 32 min</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val">6:00 /km</div>
+        </div>
+      </div>
+      <div class="history-item" onclick="goTo('screen-workout')" data-go="screen-workout" style="cursor:pointer;">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">First run</div>
+          <div class="history-date">Tuesday · 3.5 km · 24 min</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val">6:24 /km</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
        ║  SCREEN: Chat with Trainer           ║
        ╚══════════════════════════════════════╝ -->
   <div class="screen screen-chat" id="screen-chat">
@@ -4179,7 +4554,7 @@ input[type="range"]::-webkit-slider-thumb {
       </div>
     </div>
     <div class="chat-input-bar">
-      <input type="text" class="chat-input" placeholder="Type a message...">
+      <input type="text" class="chat-input" placeholder="Type a message..." aria-label="Message input">
       <button class="chat-send">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
       </button>
@@ -4205,7 +4580,7 @@ input[type="range"]::-webkit-slider-thumb {
     </button>
     <button class="nav-item" onclick="navTo('screen-community')" data-go="screen-community" data-screen="screen-community">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      <span class="nav-badge">3</span>
+      <span class="nav-badge">5</span>
       <span class="nav-label">Community</span>
     </button>
     <button class="nav-item" onclick="navTo('screen-profile')" data-go="screen-profile" data-screen="screen-profile">
@@ -4255,6 +4630,9 @@ function wasTap() {
 var mainScreens = ['screen-dashboard','screen-plan','screen-trainers','screen-community','screen-profile'];
 var lastNavScreen = 'screen-dashboard';
 var navScreens = {
+  'screen-welcome': null,
+  'screen-onboarding': null,
+  'screen-ready': null,
   'screen-dashboard': 'screen-dashboard',
   'screen-plan': 'screen-plan',
   'screen-workout': 'screen-plan',
@@ -4267,6 +4645,9 @@ var navScreens = {
   'screen-profile': 'screen-profile',
   'screen-subscription': 'screen-profile',
   'screen-devices': 'screen-profile',
+  'screen-goal': 'screen-profile',
+  'screen-notifications': 'screen-profile',
+  'screen-history': 'screen-profile',
 };
 
 function goTo(screenId) {
