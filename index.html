@@ -125,18 +125,129 @@ body {
   background: var(--chalk);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.35s ease, transform 0.35s ease;
-  transform: translateX(20px);
+  transition: opacity 0.32s ease, transform 0.32s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transform: translateX(40px) scale(0.98);
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  will-change: opacity, transform;
 }
 .screen.active {
   opacity: 1;
   pointer-events: all;
-  transform: translateX(0);
+  transform: translateX(0) scale(1);
+  z-index: 2;
+}
+.screen.exit-left {
+  opacity: 0;
+  transform: translateX(-40px) scale(0.98);
+  z-index: 1;
 }
 .screen::-webkit-scrollbar { display: none; }
+
+/* ── Modal / Overlay ── */
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(28, 24, 22, 0.45);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--space-lg);
+  padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+  z-index: 51;
+}
+.modal-overlay.open .modal-sheet {
+  transform: translateY(0);
+}
+
+.modal-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--ink-10);
+  border-radius: 2px;
+  margin: 0 auto var(--space-lg);
+}
+.modal-title {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+.modal-sub {
+  font-size: 14px;
+  color: var(--ink-60);
+  margin-bottom: var(--space-xl);
+}
+
+/* Intensity Options */
+.intensity-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+.intensity-opt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border: 2px solid var(--ink-10);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.intensity-opt.selected {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+.intensity-emoji {
+  font-size: 24px;
+  width: 40px;
+  text-align: center;
+}
+.intensity-text { flex: 1; }
+.intensity-label {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+}
+.intensity-desc {
+  font-size: 12px;
+  color: var(--ink-60);
+  margin-top: 1px;
+}
+.intensity-badge {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+.intensity-badge.down { background: var(--sol-bg); color: var(--sol); }
+.intensity-badge.same { background: var(--paper); color: var(--ink-60); }
+.intensity-badge.up { background: var(--blaze-bg); color: var(--blaze); }
 
 /* ── Bottom Navigation ── */
 .bottom-nav {
@@ -151,12 +262,25 @@ body {
   align-items: flex-start;
   justify-content: space-around;
   padding-top: 10px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   z-index: 90;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
 }
 .bottom-nav.visible { opacity: 1; pointer-events: all; }
+
+/* Sliding indicator bar */
+.nav-indicator {
+  position: absolute;
+  top: 0;
+  height: 3px;
+  width: 32px;
+  background: var(--glow);
+  border-radius: 0 0 3px 3px;
+  transition: left 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  left: calc(10% - 16px); /* default: first tab */
+}
 
 .nav-item {
   display: flex;
@@ -170,9 +294,11 @@ body {
   transition: color 0.2s;
   padding: 4px 12px;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .nav-item.active { color: var(--ink); }
-.nav-item svg { width: 24px; height: 24px; }
+.nav-item svg { width: 24px; height: 24px; transition: transform 0.2s; }
+.nav-item.active svg { transform: scale(1.08); }
 .nav-label {
   font-family: var(--body);
   font-size: 10px;
@@ -184,7 +310,6 @@ body {
    SCREEN: Welcome
    ══════════════════════════════════════════ */
 .screen-welcome {
-  background: var(--glow);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -192,7 +317,6 @@ body {
   padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
   overflow: visible;
   z-index: 5;
-  /* Extend gradient behind safe-area insets */
   margin: calc(-1 * env(safe-area-inset-top, 0px)) calc(-1 * env(safe-area-inset-right, 0px)) calc(-1 * env(safe-area-inset-bottom, 0px)) calc(-1 * env(safe-area-inset-left, 0px));
   padding-top: calc(var(--space-2xl) + env(safe-area-inset-top, 0px));
 }
@@ -365,11 +489,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
   flex-shrink: 0;
 }
-.option-icon.yellow { background: var(--sol-bg); }
-.option-icon.red { background: var(--blaze-bg); }
+.option-icon.yellow { background: var(--sol-bg); color: var(--sol); }
+.option-icon.red { background: var(--blaze-bg); color: var(--blaze); }
 .option-text {
   display: flex;
   flex-direction: column;
@@ -426,9 +549,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
   flex-shrink: 0;
   transition: background 0.2s;
+  color: #E8935A;
 }
 .flex-toggle.active .flex-toggle-icon { background: rgba(255,255,255,0.2); }
 .flex-toggle-text {
@@ -829,6 +952,77 @@ input[type="range"]::-webkit-slider-thumb {
   gap: var(--space-md);
   margin-top: var(--space-xl);
 }
+
+/* Weekly Progress Chart */
+.progress-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 100px;
+  padding: 0 var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.chart-bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+.chart-bar-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.chart-bar {
+  width: 100%;
+  border-radius: 6px 6px 4px 4px;
+  min-height: 4px;
+  transition: height 0.5s ease;
+}
+.chart-bar.filled { background: var(--glow); }
+.chart-bar.current {
+  background: var(--ink);
+  animation: barPulse 2s ease-in-out infinite;
+}
+@keyframes barPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.chart-bar.upcoming { background: var(--ink-10); }
+.chart-bar.rest { background: var(--ink-10); opacity: 0.5; }
+.chart-day-label {
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-30);
+}
+.chart-bar-group.today .chart-day-label { color: var(--ink); }
+
+.chart-legend {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+}
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--ink-60);
+}
+.chart-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.chart-dot.completed { background: var(--glow); }
+.chart-dot.today-dot { background: var(--ink); }
+.chart-dot.planned-dot { background: var(--ink-10); }
+.chart-dot.rest-dot { background: var(--ink-10); opacity: 0.5; }
 .quick-action {
   flex: 1;
   display: flex;
@@ -851,7 +1045,6 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
 }
 .quick-action-label {
   font-size: 12px;
@@ -910,6 +1103,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 14px;
   color: var(--ink-60);
 }
+.workout-info-item svg { width: 16px; height: 16px; flex-shrink: 0; }
 
 /* Adjust Banner */
 .adjust-banner {
@@ -980,6 +1174,166 @@ input[type="range"]::-webkit-slider-thumb {
 
 .workout-start {
   margin: var(--space-xl) var(--space-lg) 0;
+}
+
+/* ══════════════════════════════════════════
+   SCREEN: Active Workout
+   ══════════════════════════════════════════ */
+.screen-active-workout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-lg);
+  padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
+  color: var(--white);
+}
+.aw-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+.aw-close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-lg);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.aw-phase {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.aw-step-count {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+
+.aw-timer-ring {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin-bottom: var(--space-xl);
+}
+.aw-ring-svg {
+  width: 100%;
+  height: 100%;
+  animation: ringPulse 3s ease-in-out infinite;
+}
+@keyframes ringPulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(217,166,46,0.3)); }
+  50% { filter: drop-shadow(0 0 16px rgba(217,166,46,0.5)); }
+}
+.aw-timer-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.aw-timer-time {
+  font-family: var(--display);
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.aw-timer-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
+}
+
+.aw-stats {
+  display: flex;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  width: 100%;
+  justify-content: center;
+}
+.aw-stat { text-align: center; }
+.aw-stat-val {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+}
+.aw-stat-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.aw-next-up {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: auto;
+}
+.aw-next-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.aw-next-name {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.aw-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xl);
+  width: 100%;
+  margin-top: var(--space-xl);
+}
+.aw-btn-pause {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--glow);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(196,66,53,0.35);
+  transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.aw-btn-pause:active { transform: scale(0.92); }
+.aw-btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--space-sm) var(--space-md);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* ══════════════════════════════════════════
@@ -1328,7 +1682,11 @@ input[type="range"]::-webkit-slider-thumb {
   border: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 0.15s;
 }
+.feed-action.liked { color: var(--blaze); }
+.feed-action:active { transform: scale(1.15); }
 
 /* ══════════════════════════════════════════
    SCREEN: Profile
@@ -1431,7 +1789,7 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  color: var(--ink-60);
 }
 .profile-row-label {
   font-size: 15px;
@@ -1464,7 +1822,305 @@ input[type="range"]::-webkit-slider-thumb {
 .reset-btn:active { background: var(--blaze-soft); }
 
 /* ══════════════════════════════════════════
-   Utility
+   SCREEN: Weekly Plan
+   ══════════════════════════════════════════ */
+.screen-plan {
+  padding-top: var(--space-md);
+  padding-bottom: calc(var(--nav-h) + var(--space-md));
+}
+
+.plan-week-summary {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-lg);
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--ink-10);
+  margin-bottom: var(--space-lg);
+}
+.plan-week-stat { text-align: center; }
+.plan-week-stat-val {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+}
+.plan-week-stat-val.gradient {
+  background: var(--glow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.plan-week-stat-label {
+  font-size: 12px;
+  color: var(--ink-60);
+  margin-top: 2px;
+}
+
+.plan-day {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--ink-10);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.15s;
+}
+.plan-day:last-child { border-bottom: none; }
+.plan-day:active { background: var(--paper); margin: 0 calc(-1 * var(--space-lg)); padding-left: var(--space-lg); padding-right: var(--space-lg); }
+.plan-day.rest-day { cursor: default; opacity: 0.5; }
+.plan-day.rest-day:active { background: transparent; margin: 0; padding-left: 0; padding-right: 0; }
+
+.plan-day-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.plan-day-check {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.plan-day-check.done {
+  background: var(--glow);
+  color: var(--white);
+}
+.plan-day-check.rest {
+  background: var(--paper);
+  color: var(--ink-30);
+  font-size: 16px;
+}
+.plan-day-check.current-check {
+  background: var(--ink);
+  position: relative;
+}
+.plan-day-dot-pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--white);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+.plan-day-check.upcoming-check {
+  background: var(--paper);
+  border: 2px solid var(--ink-10);
+}
+.plan-day-name {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.plan-today-badge {
+  display: inline-flex;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  background: var(--ink);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+  letter-spacing: 0.03em;
+}
+.plan-day-workout {
+  font-size: 13px;
+  color: var(--ink-60);
+}
+.plan-day-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.plan-day-dur {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-60);
+}
+.plan-day-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.easy-tag { background: var(--sol-bg); color: var(--sol); }
+.moderate-tag { background: #FFF4EC; color: #E8935A; }
+.hard-tag { background: var(--blaze-bg); color: var(--blaze); }
+
+/* ══════════════════════════════════════════
+   SCREEN: Workout Complete
+   ══════════════════════════════════════════ */
+.screen-complete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+}
+.wc-content {
+  padding: var(--space-lg);
+  width: 100%;
+  text-align: center;
+}
+.wc-badge {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-lg);
+  animation: popIn 0.5s ease;
+}
+.wc-title {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: var(--space-sm);
+}
+.wc-sub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: var(--space-xl);
+}
+.wc-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: var(--space-xl);
+}
+.wc-stat-val {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
+  background: var(--glow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.wc-stat-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+.wc-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(255,255,255,0.06);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-xl);
+}
+.wc-detail {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: rgba(255,255,255,0.03);
+}
+.wc-detail-label {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+}
+.wc-detail-val {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+}
+.wc-feedback { margin-bottom: var(--space-xl); }
+.wc-feedback-label {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: var(--space-md);
+}
+.wc-feedback-options {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+}
+.wc-emoji {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid transparent;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.wc-emoji.selected {
+  border-color: var(--white);
+  background: rgba(255,255,255,0.15);
+  transform: scale(1.15);
+}
+
+/* ── Search Bar ── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--paper);
+  border-radius: var(--radius-full);
+  padding: 0 var(--space-md);
+  height: 44px;
+  margin-top: var(--space-sm);
+}
+.search-input {
+  flex: 1;
+  border: none;
+  background: none;
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+}
+.search-input::placeholder { color: var(--ink-30); }
+
+/* ── Notification Badge ── */
+.nav-item {
+  position: relative;
+}
+.nav-badge {
+  position: absolute;
+  top: -2px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--blaze);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--white);
+}
+
+/* ══════════════════════════════════════════
+   Utility & Animations
    ══════════════════════════════════════════ */
 .fade-up {
   animation: fadeUp 0.5s ease forwards;
@@ -1476,6 +2132,579 @@ input[type="range"]::-webkit-slider-thumb {
 .delay-1 { animation-delay: 0.1s; opacity: 0; }
 .delay-2 { animation-delay: 0.2s; opacity: 0; }
 .delay-3 { animation-delay: 0.3s; opacity: 0; }
+
+/* Stagger animation for list children */
+.stagger > * {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: staggerIn 0.4s ease forwards;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger > *:nth-child(8) { animation-delay: 0.4s; }
+@keyframes staggerIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Animated gradient background */
+.animated-gradient {
+  background: linear-gradient(-45deg, #D9A62E, #C44235, #E8935A, #D9A62E);
+  background-size: 300% 300%;
+  animation: gradientShift 6s ease infinite;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Shimmer effect for loading-like polish */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  animation: shimmerSlide 3s ease-in-out infinite;
+}
+@keyframes shimmerSlide {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* Bounce tap */
+.bounce-tap {
+  transition: transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.bounce-tap:active { transform: scale(0.96); }
+
+/* ══════════════════════════════════════════
+   SCREEN: Subscription
+   ══════════════════════════════════════════ */
+.screen-subscription {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-2xl);
+}
+.sub-header {
+  text-align: center;
+  padding: var(--space-lg);
+}
+.sub-title {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+.sub-desc {
+  font-size: 14px;
+  color: var(--ink-60);
+  line-height: 1.5;
+}
+
+.sub-plans {
+  padding: 0 var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+.sub-plan {
+  border: 2px solid var(--ink-10);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.sub-plan.selected-plan { border-color: var(--ink); }
+.sub-plan.popular {
+  border-color: var(--sol);
+  background: var(--sol-bg);
+}
+.sub-popular-badge {
+  position: absolute;
+  top: -10px;
+  right: var(--space-lg);
+  background: var(--glow);
+  color: var(--white);
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.04em;
+}
+.sub-plan-name {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.sub-plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: var(--space-sm);
+}
+.sub-plan-amount {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 700;
+}
+.sub-plan-period {
+  font-size: 14px;
+  color: var(--ink-60);
+}
+.sub-plan-features {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sub-feature {
+  font-size: 13px;
+  color: var(--ink-60);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sub-check {
+  color: var(--sol);
+  font-weight: 700;
+}
+
+/* ── Travel Adjustment Modal ── */
+.travel-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: var(--space-lg);
+}
+.travel-day-cell {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-family: var(--display);
+  background: var(--paper);
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  border: 2px solid transparent;
+}
+.travel-day-cell.travel-selected {
+  background: #FFF4EC;
+  border-color: #E8935A;
+}
+.travel-day-cell .td-label {
+  font-size: 9px;
+  color: var(--ink-30);
+  text-transform: uppercase;
+}
+.travel-day-cell .td-num {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-60);
+}
+.travel-day-cell.travel-selected .td-num { color: #E8935A; }
+.travel-impact {
+  background: var(--sol-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.travel-impact-title {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sol);
+  margin-bottom: 4px;
+}
+.travel-impact-desc {
+  font-size: 13px;
+  color: var(--ink-60);
+  line-height: 1.5;
+}
+
+/* ── Trainer Reviews ── */
+
+/* ── Race Picker (onboarding sub-selection) ── */
+.race-picker {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease;
+  opacity: 0;
+  margin-top: 0;
+}
+.race-picker.open {
+  max-height: 300px;
+  opacity: 1;
+  margin-top: var(--space-md);
+}
+.race-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.race-option:active { background: var(--paper); }
+.race-option.race-selected { background: var(--blaze-bg); }
+.race-name {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+}
+.race-date {
+  font-size: 12px;
+  color: var(--ink-60);
+}
+.race-distance {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blaze);
+}
+
+/* ── Streak Badge ── */
+.streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--sol-bg);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sol);
+  margin-top: var(--space-sm);
+}
+
+/* ── Toast Notification ── */
+.toast {
+  position: absolute;
+  top: var(--space-lg);
+  left: var(--space-lg);
+  right: var(--space-lg);
+  background: var(--ink);
+  color: var(--white);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  z-index: 200;
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* ── Workout History ── */
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--ink-10);
+}
+.history-item:last-child { border-bottom: none; }
+.history-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.history-dot.run { background: var(--blaze); }
+.history-dot.strength { background: var(--sol); }
+.history-dot.rest { background: var(--ink-10); }
+.history-info { flex: 1; }
+.history-title {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 1px;
+}
+.history-date {
+  font-size: 12px;
+  color: var(--ink-30);
+}
+.history-stats {
+  text-align: right;
+}
+.history-stat-val {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+}
+.history-stat-label {
+  font-size: 11px;
+  color: var(--ink-30);
+}
+
+/* ── Achievement Badges ── */
+.achievements {
+  display: flex;
+  gap: var(--space-md);
+  overflow-x: auto;
+  padding: 0 var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.achievements::-webkit-scrollbar { display: none; }
+.achievement {
+  min-width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.achievement-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.achievement-icon.earned {
+  background: var(--glow-soft);
+  box-shadow: 0 2px 12px rgba(217,166,46,0.2);
+  color: var(--sol);
+}
+.achievement-icon.locked {
+  background: var(--paper);
+  opacity: 0.4;
+  color: var(--ink-60);
+}
+.achievement-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-60);
+  line-height: 1.3;
+}
+
+/* ── Connected Devices ── */
+.device-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--white);
+  border: 1px solid var(--ink-10);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+}
+.device-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.device-info { flex: 1; }
+.device-name {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 1px;
+}
+.device-status {
+  font-size: 12px;
+  color: var(--ink-60);
+}
+.device-toggle {
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--ink-10);
+  border: none;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.device-toggle.on { background: var(--sol); }
+.device-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--white);
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.device-toggle.on::after { transform: translateX(18px); }
+
+/* ── Chat Preview ── */
+.screen-chat {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+}
+.chat-messages {
+  flex: 1;
+  padding: 0 var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.chat-bubble {
+  max-width: 80%;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.chat-bubble.theirs {
+  background: var(--paper);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+.chat-bubble.mine {
+  background: var(--ink);
+  color: var(--white);
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.chat-bubble-name {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--blaze);
+}
+.chat-bubble-time {
+  font-size: 11px;
+  color: var(--ink-30);
+  margin-top: 4px;
+}
+.chat-bubble.mine .chat-bubble-time { color: rgba(255,255,255,0.4); }
+.chat-input-bar {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--ink-10);
+}
+.chat-input {
+  flex: 1;
+  height: 44px;
+  border: 1.5px solid var(--ink-10);
+  border-radius: var(--radius-full);
+  padding: 0 var(--space-md);
+  font-family: var(--body);
+  font-size: 14px;
+  outline: none;
+  background: var(--white);
+}
+.chat-input:focus { border-color: var(--ink-30); }
+.chat-send {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--glow);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.chat-send:active { transform: scale(0.92); }
+.review-card {
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--ink-10);
+}
+.review-card:last-child { border-bottom: none; }
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+.review-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.review-name {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+}
+.review-date {
+  font-size: 11px;
+  color: var(--ink-30);
+}
+.review-stars {
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.review-text {
+  font-size: 13px;
+  color: var(--ink-60);
+  line-height: 1.5;
+}
 </style>
 </head>
 <body>
@@ -1484,7 +2713,7 @@ input[type="range"]::-webkit-slider-thumb {
   <!-- ╔══════════════════════════════════════╗
        ║  SCREEN: Welcome                     ║
        ╚══════════════════════════════════════╝ -->
-  <div class="screen screen-welcome active" id="screen-welcome">
+  <div class="screen screen-welcome active animated-gradient" id="screen-welcome">
     <div class="welcome-mark">
       JUVI
     </div>
@@ -1511,30 +2740,51 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="onboard-eyebrow">Step 1 of 3</div>
       <div class="onboard-title">What are you<br>training for?</div>
       <div class="onboard-sub">Pick your primary goal. You can always adjust this later.</div>
-      <div class="option-grid">
-        <div class="option-card" onclick="selectOption(this, 'ob-step-1')">
-          <div class="option-icon red">🏃</div>
+      <div class="option-grid stagger">
+        <div class="option-card" onclick="selectOption(this, 'ob-step-1')" data-goal="race">
+          <div class="option-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="4" r="2"/><path d="M6 20l3-7h4l2-4"/><path d="M9 13l-3 7"/><path d="M13 9l3 5"/></svg></div>
           <div class="option-text">
             <div class="option-label">Run a race</div>
             <div class="option-desc">5K, 10K, half or full marathon</div>
           </div>
         </div>
-        <div class="option-card" onclick="selectOption(this, 'ob-step-1')">
-          <div class="option-icon yellow">💪</div>
+
+        <!-- Race picker sub-selection -->
+        <div class="race-picker" id="racePicker">
+          <div class="race-option" onclick="selectRace(this)">
+            <div><div class="race-name">Dublin Marathon</div><div class="race-date">Oct 26, 2026</div></div>
+            <div class="race-distance">42.2 km</div>
+          </div>
+          <div class="race-option" onclick="selectRace(this)">
+            <div><div class="race-name">Dublin Half Marathon</div><div class="race-date">Sep 20, 2026</div></div>
+            <div class="race-distance">21.1 km</div>
+          </div>
+          <div class="race-option" onclick="selectRace(this)">
+            <div><div class="race-name">Parkrun 5K PB</div><div class="race-date">Any Saturday</div></div>
+            <div class="race-distance">5 km</div>
+          </div>
+          <div class="race-option" onclick="selectRace(this)">
+            <div><div class="race-name">Custom race</div><div class="race-date">Set your own date</div></div>
+            <div class="race-distance">Any</div>
+          </div>
+        </div>
+
+        <div class="option-card" onclick="selectOption(this, 'ob-step-1')" data-goal="strength">
+          <div class="option-icon yellow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11M4 10V4h3v8H4zM17 10V4h3v8h-3zM2 7v4M22 7v4"/></svg></div>
           <div class="option-text">
             <div class="option-label">Build strength</div>
             <div class="option-desc">Muscle, power, body composition</div>
           </div>
         </div>
         <div class="option-card" onclick="selectOption(this, 'ob-step-1')">
-          <div class="option-icon red">⚡</div>
+          <div class="option-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
           <div class="option-text">
             <div class="option-label">All-round fitness</div>
             <div class="option-desc">Endurance, strength, mobility</div>
           </div>
         </div>
         <div class="option-card" onclick="selectOption(this, 'ob-step-1')">
-          <div class="option-icon yellow">🧘</div>
+          <div class="option-icon yellow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 20 2 20 2s-1.2 8.6-5 13c-1.4 1.6-2.7 2.8-4 5z"/><path d="M2 21c0-3 1.8-5.8 4.6-7"/></svg></div>
           <div class="option-text">
             <div class="option-label">Stay active</div>
             <div class="option-desc">Move more, feel better daily</div>
@@ -1598,7 +2848,7 @@ input[type="range"]::-webkit-slider-thumb {
         <div class="day-pill" onclick="toggleDay(this)">Sun</div>
       </div>
       <button class="flex-toggle" id="flexToggle" onclick="toggleFlex(this)">
-        <span class="flex-toggle-icon">⚡</span>
+        <span class="flex-toggle-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
         <span class="flex-toggle-text">
           <strong>I'm flexible</strong>
           <span>Let JUVI pick the best days for me</span>
@@ -1614,7 +2864,7 @@ input[type="range"]::-webkit-slider-thumb {
         <button class="btn-back" onclick="onboardBack(2)">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
         </button>
-        <button class="btn-primary btn-gradient btn-block" onclick="goTo('screen-ready')" data-go="screen-ready">Build my plan</button>
+        <button class="btn-primary btn-gradient btn-block" onclick="buildPlan()">Build my plan</button>
       </div>
     </div>
   </div>
@@ -1623,31 +2873,41 @@ input[type="range"]::-webkit-slider-thumb {
        ║  SCREEN: Plan Ready                  ║
        ╚══════════════════════════════════════╝ -->
   <div class="screen screen-ready" id="screen-ready">
+    <button class="workout-back" onclick="goTo('screen-onboarding')" data-go="screen-onboarding" style="position:absolute;top:var(--space-lg);left:var(--space-lg);">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+    </button>
     <div class="ready-badge">
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
     </div>
     <div class="ready-title">Your plan<br>is ready.</div>
-    <div class="ready-sub">We've built an 8-week programme tailored to your goals, schedule, and experience level.</div>
+    <div class="ready-sub" id="readySub">We've built an 8-week programme tailored to your goals, schedule, and experience level.</div>
     <div class="plan-preview">
       <div class="plan-header">
-        <div class="plan-label">Your programme</div>
+        <div class="plan-label" id="readyPlanName">Your programme</div>
         <div class="plan-weeks">8 weeks</div>
       </div>
       <div class="plan-stats">
         <div class="plan-stat">
-          <div class="plan-stat-val">3×</div>
+          <div class="plan-stat-val" id="readyFreq">3×</div>
           <div class="plan-stat-label">per week</div>
         </div>
         <div class="plan-stat">
-          <div class="plan-stat-val">45</div>
+          <div class="plan-stat-val" id="readyDur">45</div>
           <div class="plan-stat-label">min avg</div>
         </div>
         <div class="plan-stat">
-          <div class="plan-stat-val">24</div>
+          <div class="plan-stat-val" id="readySessions">24</div>
           <div class="plan-stat-label">sessions</div>
         </div>
       </div>
     </div>
+
+    <!-- AI generating animation -->
+    <div style="display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-lg);padding:var(--space-sm) var(--space-md);background:var(--paper);border-radius:var(--radius-full);align-self:flex-start;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--sol);animation:dotPulse 1.5s ease-in-out infinite;"></div>
+      <span style="font-size:12px;color:var(--ink-60);">Built by JUVI AI based on your inputs</span>
+    </div>
+
     <button class="btn-primary btn-gradient btn-block" onclick="enterApp()" data-go="screen-dashboard">
       Let's go
     </button>
@@ -1662,9 +2922,13 @@ input[type="range"]::-webkit-slider-thumb {
        ║  SCREEN: Dashboard                   ║
        ╚══════════════════════════════════════╝ -->
   <div class="screen screen-dashboard" id="screen-dashboard">
+    <!-- Toast -->
+    <div class="toast" id="appToast"><div class="toast-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><span id="toastMsg">Changes saved</span></div>
+
     <div class="dash-header">
-      <div class="dash-greeting">Good morning</div>
-      <div class="dash-name">Julian 👋</div>
+      <div class="dash-greeting" id="dashGreeting">Good morning</div>
+      <div class="dash-name">Julian</div>
+      <div class="streak-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> 5-day streak</div>
     </div>
 
     <div class="week-strip">
@@ -1707,7 +2971,7 @@ input[type="range"]::-webkit-slider-thumb {
 
     <div class="section-pad">
       <div class="section-title">Today's session</div>
-      <div class="today-card" onclick="goTo('screen-workout')" data-go="screen-workout">
+      <div class="today-card shimmer" onclick="goTo('screen-workout')" data-go="screen-workout">
         <div class="today-type">Week 3 · Day 2</div>
         <div class="today-title">Tempo Run + Core</div>
         <div class="today-meta">
@@ -1739,17 +3003,95 @@ input[type="range"]::-webkit-slider-thumb {
 
       <div class="quick-actions">
         <div class="quick-action" onclick="goTo('screen-trainers')" data-go="screen-trainers">
-          <div class="quick-action-icon" style="background:var(--sol-bg)">🎯</div>
+          <div class="quick-action-icon" style="background:var(--sol-bg);color:var(--sol)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
           <div class="quick-action-label">Find a<br>trainer</div>
         </div>
-        <div class="quick-action" onclick="goTo('screen-workout')" data-go="screen-workout">
-          <div class="quick-action-icon" style="background:var(--blaze-bg)">📊</div>
+        <div class="quick-action" onclick="openModal('travelModal')">
+          <div class="quick-action-icon" style="background:var(--blaze-bg);color:var(--blaze)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
           <div class="quick-action-label">Adjust<br>plan</div>
         </div>
         <div class="quick-action" onclick="goTo('screen-community')" data-go="screen-community">
-          <div class="quick-action-icon" style="background:var(--paper)">👥</div>
+          <div class="quick-action-icon" style="background:var(--paper);color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <div class="quick-action-label">Community</div>
         </div>
+      </div>
+
+      <!-- Weekly Progress Chart -->
+      <div style="margin-top:var(--space-xl);">
+        <div class="section-title">This week</div>
+        <div class="progress-chart">
+          <div class="chart-bar-group">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar filled" style="height:70%"></div>
+            </div>
+            <div class="chart-day-label">M</div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar filled" style="height:90%"></div>
+            </div>
+            <div class="chart-day-label">T</div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar rest" style="height:20%"></div>
+            </div>
+            <div class="chart-day-label">W</div>
+          </div>
+          <div class="chart-bar-group today">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar current" style="height:60%"></div>
+            </div>
+            <div class="chart-day-label">T</div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar upcoming" style="height:40%"></div>
+            </div>
+            <div class="chart-day-label">F</div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar upcoming" style="height:85%"></div>
+            </div>
+            <div class="chart-day-label">S</div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar rest" style="height:15%"></div>
+            </div>
+            <div class="chart-day-label">S</div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <span class="chart-legend-item"><span class="chart-dot completed"></span>Done</span>
+          <span class="chart-legend-item"><span class="chart-dot today-dot"></span>Today</span>
+          <span class="chart-legend-item"><span class="chart-dot planned-dot"></span>Planned</span>
+          <span class="chart-legend-item"><span class="chart-dot rest-dot"></span>Rest</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Travel Adjustment Modal -->
+    <div class="modal-overlay" id="travelModal" onclick="closeModalOnBackdrop(event)">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Adjust your schedule</div>
+        <div class="modal-sub">Tap the days you'll be away. We'll redistribute your training around them.</div>
+        <div class="travel-days">
+          <div class="travel-day-cell" onclick="toggleTravel(this)"><div class="td-label">Mon</div><div class="td-num">25</div></div>
+          <div class="travel-day-cell" onclick="toggleTravel(this)"><div class="td-label">Tue</div><div class="td-num">26</div></div>
+          <div class="travel-day-cell travel-selected" onclick="toggleTravel(this)"><div class="td-label">Wed</div><div class="td-num">27</div></div>
+          <div class="travel-day-cell travel-selected" onclick="toggleTravel(this)"><div class="td-label">Thu</div><div class="td-num">28</div></div>
+          <div class="travel-day-cell travel-selected" onclick="toggleTravel(this)"><div class="td-label">Fri</div><div class="td-num">29</div></div>
+          <div class="travel-day-cell" onclick="toggleTravel(this)"><div class="td-label">Sat</div><div class="td-num">30</div></div>
+          <div class="travel-day-cell" onclick="toggleTravel(this)"><div class="td-label">Sun</div><div class="td-num">31</div></div>
+        </div>
+        <div class="travel-impact">
+          <div class="travel-impact-title">Plan will auto-adjust</div>
+          <div class="travel-impact-desc">Your Saturday long run moves to Monday. Thursday's session splits into two shorter sessions on Tuesday and Saturday. Total weekly load stays the same.</div>
+        </div>
+        <button class="btn-primary btn-gradient btn-block" onclick="closeModal('travelModal');showToast('Schedule adjusted')">Apply changes</button>
       </div>
     </div>
   </div>
@@ -1759,27 +3101,63 @@ input[type="range"]::-webkit-slider-thumb {
        ╚══════════════════════════════════════╝ -->
   <div class="screen screen-workout" id="screen-workout">
     <div class="workout-hero">
-      <button class="workout-back" onclick="goTo('screen-dashboard')" data-go="screen-dashboard">
+      <button class="workout-back" onclick="goTo(lastNavScreen || 'screen-plan')" id="workoutBack">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
       </button>
       <div class="workout-type">Week 3 · Day 2</div>
       <div class="workout-title">Tempo Run + Core</div>
       <div class="workout-info">
-        <div class="workout-info-item">⏱ 45 min</div>
-        <div class="workout-info-item">⚡ Moderate</div>
-        <div class="workout-info-item">🏃 5.2 km target</div>
+        <div class="workout-info-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 45 min</div>
+        <div class="workout-info-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> Moderate</div>
+        <div class="workout-info-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> 5.2 km target</div>
       </div>
     </div>
 
-    <div class="adjust-banner" onclick="void(0)">
+    <div class="adjust-banner" onclick="openModal('intensityModal')">
       <div class="adjust-text"><strong>Feeling tired?</strong> Tap to adjust intensity</div>
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--sol)" stroke-width="2"><path d="M8 4l6 6-6 6"/></svg>
+    </div>
+
+    <!-- Intensity Modal -->
+    <div class="modal-overlay" id="intensityModal" onclick="closeModalOnBackdrop(event)">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Adjust today's session</div>
+        <div class="modal-sub">We'll redistribute the load across your remaining sessions this week.</div>
+        <div class="intensity-options">
+          <div class="intensity-opt" onclick="selectIntensity(this)">
+            <div class="intensity-emoji" style="font-size:16px;font-weight:700;font-family:var(--display)">−</div>
+            <div class="intensity-text">
+              <div class="intensity-label">Take it easy</div>
+              <div class="intensity-desc">Shorter intervals, lower pace targets</div>
+            </div>
+            <div class="intensity-badge down">−20%</div>
+          </div>
+          <div class="intensity-opt selected" onclick="selectIntensity(this)">
+            <div class="intensity-emoji" style="font-size:16px;font-weight:700;font-family:var(--display)">=</div>
+            <div class="intensity-text">
+              <div class="intensity-label">Keep as planned</div>
+              <div class="intensity-desc">Your original session</div>
+            </div>
+            <div class="intensity-badge same">Planned</div>
+          </div>
+          <div class="intensity-opt" onclick="selectIntensity(this)">
+            <div class="intensity-emoji" style="font-size:16px;font-weight:700;font-family:var(--display)">+</div>
+            <div class="intensity-text">
+              <div class="intensity-label">Push harder</div>
+              <div class="intensity-desc">Extra interval, faster targets</div>
+            </div>
+            <div class="intensity-badge up">+15%</div>
+          </div>
+        </div>
+        <button class="btn-primary btn-gradient btn-block" onclick="closeModal('intensityModal');showToast('Workout intensity updated')">Apply changes</button>
+      </div>
     </div>
 
     <div class="section-pad">
       <div class="section-title">Exercises</div>
     </div>
-    <div class="exercise-list">
+    <div class="exercise-list stagger">
       <div class="exercise-item">
         <div class="exercise-num">1</div>
         <div class="exercise-details">
@@ -1828,7 +3206,261 @@ input[type="range"]::-webkit-slider-thumb {
       </div>
     </div>
     <div class="workout-start">
-      <button class="btn-primary btn-gradient btn-block">Begin workout</button>
+      <button class="btn-primary btn-gradient btn-block" onclick="goTo('screen-active-workout')" data-go="screen-active-workout">Begin workout</button>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Active Workout              ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-active-workout" id="screen-active-workout" style="background:var(--ink);">
+    <div class="aw-header">
+      <button class="aw-close" onclick="goTo('screen-workout')" data-go="screen-workout">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="2"><path d="M15 5L5 15M5 5l10 10"/></svg>
+      </button>
+      <div class="aw-phase" id="awPhase">Warm-up jog</div>
+      <div class="aw-step-count">Exercise 1 of 6</div>
+    </div>
+
+    <div class="aw-timer-ring">
+      <svg class="aw-ring-svg" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
+        <circle class="aw-ring-progress" cx="100" cy="100" r="88" fill="none" stroke="url(#awGrad)" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="553" stroke-dashoffset="138" transform="rotate(-90 100 100)"/>
+        <defs>
+          <linearGradient id="awGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#D9A62E"/>
+            <stop offset="100%" stop-color="#C44235"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="aw-timer-inner">
+        <div class="aw-timer-time" id="awTimer">6:00</div>
+        <div class="aw-timer-label">remaining</div>
+      </div>
+    </div>
+
+    <div class="aw-stats">
+      <div class="aw-stat">
+        <div class="aw-stat-val" id="awElapsed">2:00</div>
+        <div class="aw-stat-label">elapsed</div>
+      </div>
+      <div class="aw-stat">
+        <div class="aw-stat-val">Z1–2</div>
+        <div class="aw-stat-label">target zone</div>
+      </div>
+      <div class="aw-stat">
+        <div class="aw-stat-val">easy</div>
+        <div class="aw-stat-label">pace</div>
+      </div>
+    </div>
+
+    <div class="aw-next-up">
+      <div class="aw-next-label">Next up</div>
+      <div class="aw-next-name">Tempo intervals · 4 × 4 min</div>
+    </div>
+
+    <div class="aw-controls">
+      <button class="aw-btn-secondary" onclick="goTo('screen-workout')" data-go="screen-workout">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+        Previous
+      </button>
+      <button class="aw-btn-pause" id="awPauseBtn" onclick="togglePause()">
+        <svg id="pauseIcon" width="28" height="28" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+        <svg id="playIcon" width="28" height="28" viewBox="0 0 24 24" fill="white" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="aw-btn-secondary" onclick="goTo('screen-complete')" data-go="screen-complete">
+        Skip
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Weekly Plan                 ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-plan" id="screen-plan">
+    <div style="padding:var(--space-md) var(--space-lg) 0;">
+      <div class="trainers-title">Training plan</div>
+    </div>
+
+    <!-- Week Pills -->
+    <div class="filter-strip" style="padding-bottom:var(--space-lg);">
+      <div class="filter-pill" onclick="toggleFilter(this)">Week 1</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Week 2</div>
+      <div class="filter-pill active" onclick="toggleFilter(this)">Week 3</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Week 4</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Week 5</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Week 6</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Week 7</div>
+      <div class="filter-pill" onclick="toggleFilter(this)">Week 8</div>
+    </div>
+
+    <div style="padding:0 var(--space-lg) calc(var(--nav-h) + var(--space-md));">
+      <!-- Week summary -->
+      <div class="plan-week-summary">
+        <div class="plan-week-stat">
+          <div class="plan-week-stat-val gradient">3</div>
+          <div class="plan-week-stat-label">sessions</div>
+        </div>
+        <div class="plan-week-stat">
+          <div class="plan-week-stat-val gradient">18.6</div>
+          <div class="plan-week-stat-label">km total</div>
+        </div>
+        <div class="plan-week-stat">
+          <div class="plan-week-stat-val gradient">2:15</div>
+          <div class="plan-week-stat-label">hours</div>
+        </div>
+      </div>
+
+      <!-- Day cards -->
+      <div class="plan-day completed" onclick="goTo('screen-workout')" data-go="screen-workout">
+        <div class="plan-day-left">
+          <div class="plan-day-check done">✓</div>
+          <div>
+            <div class="plan-day-name">Monday</div>
+            <div class="plan-day-workout">Easy run · 5.8 km</div>
+          </div>
+        </div>
+        <div class="plan-day-meta">
+          <div class="plan-day-dur">35 min</div>
+          <div class="plan-day-tag easy-tag">Easy</div>
+        </div>
+      </div>
+
+      <div class="plan-day completed" onclick="goTo('screen-workout')" data-go="screen-workout">
+        <div class="plan-day-left">
+          <div class="plan-day-check done">✓</div>
+          <div>
+            <div class="plan-day-name">Tuesday</div>
+            <div class="plan-day-workout">Intervals · 6.2 km</div>
+          </div>
+        </div>
+        <div class="plan-day-meta">
+          <div class="plan-day-dur">40 min</div>
+          <div class="plan-day-tag hard-tag">Hard</div>
+        </div>
+      </div>
+
+      <div class="plan-day rest-day">
+        <div class="plan-day-left">
+          <div class="plan-day-check rest">–</div>
+          <div>
+            <div class="plan-day-name">Wednesday</div>
+            <div class="plan-day-workout">Rest day</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-day today-plan" onclick="goTo('screen-workout')" data-go="screen-workout">
+        <div class="plan-day-left">
+          <div class="plan-day-check current-check">
+            <div class="plan-day-dot-pulse"></div>
+          </div>
+          <div>
+            <div class="plan-day-name">Thursday <span class="plan-today-badge">Today</span></div>
+            <div class="plan-day-workout">Tempo Run + Core · 5.2 km</div>
+          </div>
+        </div>
+        <div class="plan-day-meta">
+          <div class="plan-day-dur">45 min</div>
+          <div class="plan-day-tag moderate-tag">Moderate</div>
+        </div>
+      </div>
+
+      <div class="plan-day rest-day">
+        <div class="plan-day-left">
+          <div class="plan-day-check rest">–</div>
+          <div>
+            <div class="plan-day-name">Friday</div>
+            <div class="plan-day-workout">Rest day</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-day upcoming-plan" onclick="goTo('screen-workout')" data-go="screen-workout">
+        <div class="plan-day-left">
+          <div class="plan-day-check upcoming-check"></div>
+          <div>
+            <div class="plan-day-name">Saturday</div>
+            <div class="plan-day-workout">Long run · 8.4 km</div>
+          </div>
+        </div>
+        <div class="plan-day-meta">
+          <div class="plan-day-dur">55 min</div>
+          <div class="plan-day-tag easy-tag">Easy</div>
+        </div>
+      </div>
+
+      <div class="plan-day rest-day">
+        <div class="plan-day-left">
+          <div class="plan-day-check rest">–</div>
+          <div>
+            <div class="plan-day-name">Sunday</div>
+            <div class="plan-day-workout">Rest day</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Workout Complete            ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-complete" id="screen-complete" style="background:var(--ink);">
+    <div class="wc-content">
+      <button class="aw-close" onclick="goTo('screen-dashboard')" data-go="screen-dashboard" style="position:absolute;top:var(--space-lg);right:var(--space-lg);">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="2"><path d="M15 5L5 15M5 5l10 10"/></svg>
+      </button>
+      <div class="wc-badge">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div class="wc-title">Workout<br>complete</div>
+      <div class="wc-sub">Great session! Here's how you did.</div>
+
+      <div class="wc-stats">
+        <div class="wc-stat">
+          <div class="wc-stat-val">45:12</div>
+          <div class="wc-stat-label">Duration</div>
+        </div>
+        <div class="wc-stat">
+          <div class="wc-stat-val">5.3</div>
+          <div class="wc-stat-label">km</div>
+        </div>
+        <div class="wc-stat">
+          <div class="wc-stat-val">342</div>
+          <div class="wc-stat-label">kcal</div>
+        </div>
+      </div>
+
+      <div class="wc-detail-row">
+        <div class="wc-detail">
+          <span class="wc-detail-label">Avg pace</span>
+          <span class="wc-detail-val">5:14 /km</span>
+        </div>
+        <div class="wc-detail">
+          <span class="wc-detail-label">Tempo splits</span>
+          <span class="wc-detail-val">4:38 avg</span>
+        </div>
+        <div class="wc-detail">
+          <span class="wc-detail-label">Plan adherence</span>
+          <span class="wc-detail-val" style="color:var(--sol);">96%</span>
+        </div>
+      </div>
+
+      <div class="wc-feedback">
+        <div class="wc-feedback-label">How did that feel?</div>
+        <div class="wc-feedback-options">
+          <button class="wc-emoji" onclick="selectEmoji(this)"><span style="font-size:14px;font-weight:700">1</span><span style="font-size:9px;display:block;margin-top:2px">Hard</span></button>
+          <button class="wc-emoji" onclick="selectEmoji(this)"><span style="font-size:14px;font-weight:700">2</span><span style="font-size:9px;display:block;margin-top:2px">Tough</span></button>
+          <button class="wc-emoji" onclick="selectEmoji(this)"><span style="font-size:14px;font-weight:700">3</span><span style="font-size:9px;display:block;margin-top:2px">Good</span></button>
+          <button class="wc-emoji selected" onclick="selectEmoji(this)"><span style="font-size:14px;font-weight:700">4</span><span style="font-size:9px;display:block;margin-top:2px">Strong</span></button>
+          <button class="wc-emoji" onclick="selectEmoji(this)"><span style="font-size:14px;font-weight:700">5</span><span style="font-size:9px;display:block;margin-top:2px">Peak</span></button>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-block" style="background:var(--white);color:var(--ink);" onclick="goTo('screen-dashboard')" data-go="screen-dashboard">Done</button>
+      <button class="btn-primary btn-block" style="background:rgba(255,255,255,0.1);color:var(--white);margin-top:var(--space-sm);" onclick="goTo('screen-community')" data-go="screen-community">Share to community</button>
     </div>
   </div>
 
@@ -1838,6 +3470,10 @@ input[type="range"]::-webkit-slider-thumb {
   <div class="screen screen-trainers" id="screen-trainers">
     <div class="trainers-header">
       <div class="trainers-title">Find a trainer</div>
+      <div class="search-bar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink-30)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" class="search-input" placeholder="Search by name, specialty...">
+      </div>
     </div>
     <div class="filter-strip">
       <div class="filter-pill active" onclick="toggleFilter(this)">All</div>
@@ -1847,9 +3483,9 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="filter-pill" onclick="toggleFilter(this)">Nutrition</div>
       <div class="filter-pill" onclick="toggleFilter(this)">Mobility</div>
     </div>
-    <div class="trainer-grid">
+    <div class="trainer-grid stagger">
       <div class="trainer-card" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile">
-        <div class="trainer-avatar">🏋️</div>
+        <div class="trainer-avatar" style="background:var(--blaze-bg);font-family:var(--display);font-size:16px;font-weight:700;color:var(--blaze)">SK</div>
         <div class="trainer-info">
           <div class="trainer-name">Sarah K.</div>
           <div class="trainer-specialty">Running coach · Dublin</div>
@@ -1858,11 +3494,11 @@ input[type="range"]::-webkit-slider-thumb {
             <div class="trainer-tag">5K–10K</div>
             <div class="trainer-tag">Beginners</div>
           </div>
-          <div class="trainer-rating">⭐ <strong>4.9</strong> · 127 athletes</div>
+          <div class="trainer-rating">★ <strong>4.9</strong> · 127 athletes</div>
         </div>
       </div>
       <div class="trainer-card" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile">
-        <div class="trainer-avatar">💪</div>
+        <div class="trainer-avatar" style="background:var(--sol-bg);font-family:var(--display);font-size:16px;font-weight:700;color:var(--sol)">MJ</div>
         <div class="trainer-info">
           <div class="trainer-name">Marcus J.</div>
           <div class="trainer-specialty">Strength & HYROX · Dublin</div>
@@ -1871,11 +3507,11 @@ input[type="range"]::-webkit-slider-thumb {
             <div class="trainer-tag">Hybrid</div>
             <div class="trainer-tag">CrossFit</div>
           </div>
-          <div class="trainer-rating">⭐ <strong>4.8</strong> · 89 athletes</div>
+          <div class="trainer-rating">★ <strong>4.8</strong> · 89 athletes</div>
         </div>
       </div>
       <div class="trainer-card" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile">
-        <div class="trainer-avatar">🧘</div>
+        <div class="trainer-avatar" style="background:var(--paper);font-family:var(--display);font-size:16px;font-weight:700;color:var(--ink-60)">AT</div>
         <div class="trainer-info">
           <div class="trainer-name">Aisha T.</div>
           <div class="trainer-specialty">Mobility & recovery · Online</div>
@@ -1884,11 +3520,11 @@ input[type="range"]::-webkit-slider-thumb {
             <div class="trainer-tag">Rehab</div>
             <div class="trainer-tag">Flexibility</div>
           </div>
-          <div class="trainer-rating">⭐ <strong>5.0</strong> · 64 athletes</div>
+          <div class="trainer-rating">★ <strong>5.0</strong> · 64 athletes</div>
         </div>
       </div>
       <div class="trainer-card" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile">
-        <div class="trainer-avatar">🥗</div>
+        <div class="trainer-avatar" style="background:var(--sol-bg);font-family:var(--display);font-size:16px;font-weight:700;color:var(--sol)">LD</div>
         <div class="trainer-info">
           <div class="trainer-name">Liam D.</div>
           <div class="trainer-specialty">Nutrition coach · Dublin</div>
@@ -1896,7 +3532,7 @@ input[type="range"]::-webkit-slider-thumb {
             <div class="trainer-tag">Meal plans</div>
             <div class="trainer-tag">Race fueling</div>
           </div>
-          <div class="trainer-rating">⭐ <strong>4.7</strong> · 52 athletes</div>
+          <div class="trainer-rating">★ <strong>4.7</strong> · 52 athletes</div>
         </div>
       </div>
     </div>
@@ -1912,7 +3548,7 @@ input[type="range"]::-webkit-slider-thumb {
       </button>
     </div>
     <div class="tp-hero">
-      <div class="tp-avatar">🏋️</div>
+      <div class="tp-avatar" style="font-family:var(--display);font-size:24px;font-weight:700;color:var(--blaze)">SK</div>
       <div class="tp-info">
         <div class="tp-name">Sarah Kelly</div>
         <div class="tp-spec">Running coach · Dublin</div>
@@ -1957,10 +3593,42 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
       </div>
     </div>
+
+    <div class="tp-section-title" style="margin-top:var(--space-lg);">Reviews</div>
+    <div style="padding:0 var(--space-lg);margin-bottom:var(--space-xl);">
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar" style="font-family:var(--display);font-size:11px;font-weight:700;color:var(--sol)">AM</div>
+          <div class="review-name">Aoife M.</div>
+          <div class="review-date">2 weeks ago</div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Sarah adjusted my plan when I injured my knee and I still hit my half marathon PB. Incredibly attentive and knows her stuff.</div>
+      </div>
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar" style="font-family:var(--display);font-size:11px;font-weight:700;color:var(--blaze)">DL</div>
+          <div class="review-name">David L.</div>
+          <div class="review-date">1 month ago</div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Went from couch to finishing my first 10K in 8 weeks. The weekly check-ins kept me accountable without feeling pressured.</div>
+      </div>
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar" style="font-family:var(--display);font-size:11px;font-weight:700;color:var(--ink-60)">MT</div>
+          <div class="review-name">Maria T.</div>
+          <div class="review-date">2 months ago</div>
+        </div>
+        <div class="review-stars">★★★★☆</div>
+        <div class="review-text">Great coach for beginners. Only reason for 4 stars is I wish there were more video demonstrations of the drills.</div>
+      </div>
+    </div>
+
     <div class="tp-cta">
-      <button class="btn-primary btn-gradient btn-block">Message Sarah</button>
+      <button class="btn-primary btn-gradient btn-block" onclick="goTo('screen-chat')" data-go="screen-chat">Message Sarah</button>
       <div style="text-align:center;margin-top:var(--space-md);">
-        <button class="btn-primary btn-outline btn-block" style="height:48px;font-size:14px;">Book intro call · Free</button>
+        <button class="btn-primary btn-outline btn-block" style="height:48px;font-size:14px;" onclick="goTo('screen-chat');setTimeout(function(){showToast('Intro call request sent')},400)" data-go="screen-chat">Book intro call · Free</button>
       </div>
     </div>
   </div>
@@ -1974,7 +3642,7 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
 
     <div class="challenge-card">
-      <div class="challenge-eyebrow">Weekly challenge</div>
+      <div class="challenge-eyebrow">WEEKLY CHALLENGE</div>
       <div class="challenge-title">August distance challenge</div>
       <div class="challenge-sub">Run 50 km this month · 238 people joined</div>
       <div class="challenge-progress">
@@ -1985,7 +3653,7 @@ input[type="range"]::-webkit-slider-thumb {
     <div class="feed">
       <div class="feed-post">
         <div class="feed-header">
-          <div class="feed-avatar a">🏃</div>
+          <div class="feed-avatar a" style="font-family:var(--display);font-size:14px;font-weight:700;color:var(--sol)">AM</div>
           <div class="feed-user-info">
             <div class="feed-username">Aoife M.</div>
             <div class="feed-time">2h ago</div>
@@ -2007,15 +3675,15 @@ input[type="range"]::-webkit-slider-thumb {
           </div>
         </div>
         <div class="feed-actions">
-          <button class="feed-action">❤️ 12</button>
-          <button class="feed-action">💬 3</button>
-          <button class="feed-action">🔥 Nice!</button>
+          <button class="feed-action" onclick="toggleLike(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21.3l7.8-7.8 1-1.1a5.5 5.5 0 000-7.8z"/></svg> 12</button>
+          <button class="feed-action"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> 3</button>
+          <button class="feed-action"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4-2 7-6 7-11 0-3-2-5-4-7-1 2-2 3-3 3s-2-2-3-4c-2 3-4 6-4 8 0 5 3 9 7 11z"/></svg> Nice!</button>
         </div>
       </div>
 
       <div class="feed-post">
         <div class="feed-header">
-          <div class="feed-avatar b">💪</div>
+          <div class="feed-avatar b" style="font-family:var(--display);font-size:14px;font-weight:700;color:var(--blaze)">CB</div>
           <div class="feed-user-info">
             <div class="feed-username">Conor B.</div>
             <div class="feed-time">5h ago</div>
@@ -2023,15 +3691,15 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
         <div class="feed-body">Just matched with Marcus as my HYROX coach. Training for Dublin in November — anyone else doing doubles?</div>
         <div class="feed-actions">
-          <button class="feed-action">❤️ 8</button>
-          <button class="feed-action">💬 7</button>
-          <button class="feed-action">🔥 Nice!</button>
+          <button class="feed-action" onclick="toggleLike(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21.3l7.8-7.8 1-1.1a5.5 5.5 0 000-7.8z"/></svg> 8</button>
+          <button class="feed-action"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> 7</button>
+          <button class="feed-action"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4-2 7-6 7-11 0-3-2-5-4-7-1 2-2 3-3 3s-2-2-3-4c-2 3-4 6-4 8 0 5 3 9 7 11z"/></svg> Nice!</button>
         </div>
       </div>
 
       <div class="feed-post">
         <div class="feed-header">
-          <div class="feed-avatar c">🧘</div>
+          <div class="feed-avatar c" style="font-family:var(--display);font-size:14px;font-weight:700;color:var(--ink-60)">PS</div>
           <div class="feed-user-info">
             <div class="feed-username">Priya S.</div>
             <div class="feed-time">Yesterday</div>
@@ -2039,9 +3707,9 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
         <div class="feed-body">Week 6 done! Changed my schedule to 4 sessions instead of 3 and honestly the shorter sessions work so much better with my commute.</div>
         <div class="feed-actions">
-          <button class="feed-action">❤️ 21</button>
-          <button class="feed-action">💬 5</button>
-          <button class="feed-action">🔥 Nice!</button>
+          <button class="feed-action" onclick="toggleLike(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21.3l7.8-7.8 1-1.1a5.5 5.5 0 000-7.8z"/></svg> 21</button>
+          <button class="feed-action"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> 5</button>
+          <button class="feed-action"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4-2 7-6 7-11 0-3-2-5-4-7-1 2-2 3-3 3s-2-2-3-4c-2 3-4 6-4 8 0 5 3 9 7 11z"/></svg> Nice!</button>
         </div>
       </div>
     </div>
@@ -2074,25 +3742,105 @@ input[type="range"]::-webkit-slider-thumb {
       </div>
     </div>
 
+    <!-- Achievements -->
+    <div style="padding:0 0 0 var(--space-lg);margin-bottom:var(--space-sm);">
+      <div class="profile-section-title" style="padding:0;">Achievements</div>
+    </div>
+    <div class="achievements">
+      <div class="achievement">
+        <div class="achievement-icon earned" style="color:var(--sol)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89L17 22l-5-3-5 3 1.52-9.11"/></svg></div>
+        <div class="achievement-name">First workout</div>
+      </div>
+      <div class="achievement">
+        <div class="achievement-icon earned" style="color:var(--blaze)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+        <div class="achievement-name">5-day streak</div>
+      </div>
+      <div class="achievement">
+        <div class="achievement-icon earned" style="color:var(--sol)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="achievement-name">10 sessions</div>
+      </div>
+      <div class="achievement">
+        <div class="achievement-icon locked"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></div>
+        <div class="achievement-name">50 km total</div>
+      </div>
+      <div class="achievement">
+        <div class="achievement-icon locked"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div class="achievement-name">Speed demon</div>
+      </div>
+      <div class="achievement">
+        <div class="achievement-icon locked"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></div>
+        <div class="achievement-name">Plan complete</div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="profile-section">
+      <div class="profile-section-title">Recent activity</div>
+      <div class="history-item">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">Intervals</div>
+          <div class="history-date">Tuesday · Week 3</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val">6.2 km</div>
+          <div class="history-stat-label">40 min</div>
+        </div>
+      </div>
+      <div class="history-item">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">Easy run</div>
+          <div class="history-date">Monday · Week 3</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val">5.8 km</div>
+          <div class="history-stat-label">35 min</div>
+        </div>
+      </div>
+      <div class="history-item">
+        <div class="history-dot run"></div>
+        <div class="history-info">
+          <div class="history-title">Long run</div>
+          <div class="history-date">Saturday · Week 2</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val">9.1 km</div>
+          <div class="history-stat-label">58 min</div>
+        </div>
+      </div>
+      <div class="history-item">
+        <div class="history-dot strength"></div>
+        <div class="history-info">
+          <div class="history-title">Strength + Core</div>
+          <div class="history-date">Thursday · Week 2</div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat-val">—</div>
+          <div class="history-stat-label">30 min</div>
+        </div>
+      </div>
+    </div>
+
     <div class="profile-section">
       <div class="profile-section-title">Training</div>
-      <div class="profile-row">
+      <div class="profile-row" onclick="goTo('screen-onboarding')" data-go="screen-onboarding">
         <div class="profile-row-left">
-          <div class="profile-row-icon">🎯</div>
+          <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
           <div class="profile-row-label">My goals</div>
         </div>
         <div class="profile-row-chevron">›</div>
       </div>
-      <div class="profile-row">
+      <div class="profile-row" onclick="goTo('screen-plan')" data-go="screen-plan">
         <div class="profile-row-left">
-          <div class="profile-row-icon">📅</div>
+          <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
           <div class="profile-row-label">Schedule</div>
         </div>
         <div class="profile-row-chevron">›</div>
       </div>
-      <div class="profile-row">
+      <div class="profile-row" onclick="goTo('screen-devices')" data-go="screen-devices">
         <div class="profile-row-left">
-          <div class="profile-row-icon">⌚</div>
+          <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><path d="M12 9v3l1.5 1.5"/><path d="M7.5 4.2V2h9v2.2M7.5 19.8V22h9v-2.2"/></svg></div>
           <div class="profile-row-label">Connected devices</div>
         </div>
         <div class="profile-row-chevron">›</div>
@@ -2101,23 +3849,23 @@ input[type="range"]::-webkit-slider-thumb {
 
     <div class="profile-section">
       <div class="profile-section-title">Account</div>
-      <div class="profile-row">
+      <div class="profile-row" onclick="showToast('Edit profile coming soon')">
         <div class="profile-row-left">
-          <div class="profile-row-icon">👤</div>
+          <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
           <div class="profile-row-label">Edit profile</div>
         </div>
         <div class="profile-row-chevron">›</div>
       </div>
-      <div class="profile-row">
+      <div class="profile-row" onclick="goTo('screen-subscription')" data-go="screen-subscription">
         <div class="profile-row-left">
-          <div class="profile-row-icon">💳</div>
+          <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
           <div class="profile-row-label">Subscription</div>
         </div>
         <div class="profile-row-chevron">›</div>
       </div>
-      <div class="profile-row">
+      <div class="profile-row" onclick="showToast('Notifications settings coming soon')">
         <div class="profile-row-left">
-          <div class="profile-row-icon">🔔</div>
+          <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
           <div class="profile-row-label">Notifications</div>
         </div>
         <div class="profile-row-chevron">›</div>
@@ -2126,7 +3874,7 @@ input[type="range"]::-webkit-slider-thumb {
 
     <div class="profile-section">
       <button class="reset-btn" id="resetBtn">
-        <span>🔄</span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 005.6 5.6L1 10M3.5 15a9 9 0 0014.9 4.4L23 14"/></svg></span>
         Reset app &amp; redo onboarding
       </button>
     </div>
@@ -2140,14 +3888,180 @@ input[type="range"]::-webkit-slider-thumb {
   </div>
 
   <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Subscription                ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-subscription" id="screen-subscription">
+    <div style="padding:var(--space-md) var(--space-lg) 0;">
+      <button class="workout-back" onclick="goTo('screen-profile')" data-go="screen-profile">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <div class="sub-header">
+      <div class="sub-title">Choose your plan</div>
+      <div class="sub-desc">Train smarter with personalized plans, trainer access, and community features.</div>
+    </div>
+
+    <div class="sub-plans stagger">
+      <div class="sub-plan" onclick="selectPlan(this)">
+        <div class="sub-plan-name">Free</div>
+        <div class="sub-plan-price">
+          <div class="sub-plan-amount">€0</div>
+          <div class="sub-plan-period">forever</div>
+        </div>
+        <div class="sub-plan-features">
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Basic training plan</div>
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Workout tracking</div>
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Community access</div>
+        </div>
+      </div>
+
+      <div class="sub-plan popular selected-plan" onclick="selectPlan(this)">
+        <div class="sub-popular-badge">Most popular</div>
+        <div class="sub-plan-name">Pro</div>
+        <div class="sub-plan-price">
+          <div class="sub-plan-amount">€9.99</div>
+          <div class="sub-plan-period">/month</div>
+        </div>
+        <div class="sub-plan-features">
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> AI-personalized plans</div>
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Adaptive scheduling</div>
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Unlimited plan adjustments</div>
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Detailed analytics</div>
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Trainer discovery</div>
+        </div>
+      </div>
+
+      <div class="sub-plan" onclick="selectPlan(this)">
+        <div class="sub-plan-name">Pro + Coach</div>
+        <div class="sub-plan-price">
+          <div class="sub-plan-amount">€29.99</div>
+          <div class="sub-plan-period">/month</div>
+        </div>
+        <div class="sub-plan-features">
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Everything in Pro</div>
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> 1 trainer included</div>
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Weekly check-ins</div>
+          <div class="sub-feature"><span class="sub-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span> Priority support</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:0 var(--space-lg);">
+      <button class="btn-primary btn-gradient btn-block" onclick="showToast('Free trial activated!');setTimeout(function(){goTo('screen-dashboard')},1500)">Start free trial</button>
+      <div style="text-align:center;margin-top:var(--space-md);font-size:12px;color:var(--ink-30);">14-day free trial · Cancel anytime</div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Connected Devices           ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-devices" id="screen-devices">
+    <div style="padding:var(--space-md) var(--space-lg) 0;">
+      <button class="workout-back" onclick="goTo('screen-profile')" data-go="screen-profile">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <div style="padding:var(--space-md) var(--space-lg);">
+      <div class="trainers-title">Connected devices</div>
+      <div style="font-size:14px;color:var(--ink-60);margin-bottom:var(--space-xl);line-height:1.5;">Sync your wearable data to get smarter training adjustments and more accurate stats.</div>
+
+      <div class="device-card">
+        <div class="device-icon" style="background:var(--paper);color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><path d="M12 9v3l1.5 1.5"/><path d="M7.5 4.2V2h9v2.2M7.5 19.8V22h9v-2.2"/></svg></div>
+        <div class="device-info">
+          <div class="device-name">Apple Watch</div>
+          <div class="device-status" style="color:var(--sol)">Connected</div>
+        </div>
+        <button class="device-toggle on" onclick="toggleDevice(this)"></button>
+      </div>
+      <div class="device-card">
+        <div class="device-icon" style="background:var(--paper);color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 7L9 3 5 7l4 4M17 11l4 4-4 4-4-4M8 12l4 4 6-6-4-4z"/><path d="m16 8 3-3M9 21a6 6 0 0 0-6-6"/></svg></div>
+        <div class="device-info">
+          <div class="device-name">Garmin</div>
+          <div class="device-status">Not connected</div>
+        </div>
+        <button class="device-toggle" onclick="toggleDevice(this)"></button>
+      </div>
+      <div class="device-card">
+        <div class="device-icon" style="background:var(--blaze-bg);color:var(--blaze)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="device-info">
+          <div class="device-name">Strava</div>
+          <div class="device-status">Not connected</div>
+        </div>
+        <button class="device-toggle" onclick="toggleDevice(this)"></button>
+      </div>
+      <div class="device-card">
+        <div class="device-icon" style="background:var(--sol-bg);color:var(--sol)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div class="device-info">
+          <div class="device-name">Apple Health</div>
+          <div class="device-status" style="color:var(--sol)">Connected</div>
+        </div>
+        <button class="device-toggle on" onclick="toggleDevice(this)"></button>
+      </div>
+
+      <div style="margin-top:var(--space-xl);padding:var(--space-md);background:var(--paper);border-radius:var(--radius-md);">
+        <div style="font-size:13px;color:var(--ink-60);line-height:1.5;">
+          <strong style="color:var(--ink);">Privacy first</strong> — your health data stays on your device. JUVI only reads workout metrics (pace, heart rate, distance) to improve your plan.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
+       ║  SCREEN: Chat with Trainer           ║
+       ╚══════════════════════════════════════╝ -->
+  <div class="screen screen-chat" id="screen-chat">
+    <div style="padding:var(--space-md) var(--space-lg) 0;display:flex;align-items:center;gap:var(--space-md);">
+      <button class="workout-back" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile" style="margin:0;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M12 4l-6 6 6 6"/></svg>
+      </button>
+      <div>
+        <div style="font-family:var(--display);font-size:16px;font-weight:600;">Sarah Kelly</div>
+        <div style="font-size:12px;color:var(--sol);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:var(--sol);display:inline-block;"></span> Online</div>
+      </div>
+    </div>
+    <div class="chat-messages">
+      <div class="chat-bubble theirs">
+        <div class="chat-bubble-name">Sarah</div>
+        Hi Julian! I saw you signed up for the Dublin Marathon prep plan. Great choice — I've coached 12 athletes through that exact race. How's your training been so far?
+        <div class="chat-bubble-time">2:14 PM</div>
+      </div>
+      <div class="chat-bubble mine">
+        Hey Sarah! Really excited to get started. I've been running casually for about a year but this is my first marathon. Feeling a mix of excitement and nerves tbh 😅
+        <div class="chat-bubble-time">2:18 PM</div>
+      </div>
+      <div class="chat-bubble theirs">
+        <div class="chat-bubble-name">Sarah</div>
+        That's totally normal! The fact that you have a running base already puts you in a great position. I had a look at your plan — the progression looks solid. A few things I'd adjust based on your schedule. Can we do a quick call this week?
+        <div class="chat-bubble-time">2:21 PM</div>
+      </div>
+      <div class="chat-bubble mine">
+        That would be amazing. I'm free Thursday or Friday afternoon?
+        <div class="chat-bubble-time">2:23 PM</div>
+      </div>
+      <div class="chat-bubble theirs">
+        <div class="chat-bubble-name">Sarah</div>
+        Thursday at 4pm works perfectly. I'll send a calendar invite. In the meantime, stick with tomorrow's easy run — don't push the pace, just enjoy it 🏃‍♂️
+        <div class="chat-bubble-time">2:25 PM</div>
+      </div>
+    </div>
+    <div class="chat-input-bar">
+      <input type="text" class="chat-input" placeholder="Type a message...">
+      <button class="chat-send">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗
        ║  Bottom Navigation                   ║
        ╚══════════════════════════════════════╝ -->
   <nav class="bottom-nav" id="bottomNav">
+    <div class="nav-indicator" id="navIndicator"></div>
     <button class="nav-item active" onclick="navTo('screen-dashboard')" data-go="screen-dashboard" data-screen="screen-dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
       <span class="nav-label">Home</span>
     </button>
-    <button class="nav-item" onclick="navTo('screen-workout')" data-go="screen-workout" data-screen="screen-workout">
+    <button class="nav-item" onclick="navTo('screen-plan')" data-go="screen-plan" data-screen="screen-plan">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       <span class="nav-label">Train</span>
     </button>
@@ -2157,6 +4071,7 @@ input[type="range"]::-webkit-slider-thumb {
     </button>
     <button class="nav-item" onclick="navTo('screen-community')" data-go="screen-community" data-screen="screen-community">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="nav-badge">3</span>
       <span class="nav-label">Community</span>
     </button>
     <button class="nav-item" onclick="navTo('screen-profile')" data-go="screen-profile" data-screen="screen-profile">
@@ -2203,30 +4118,94 @@ function wasTap() {
 }
 
 /* ── Navigation ── */
-var mainScreens = ['screen-dashboard','screen-workout','screen-trainers','screen-community','screen-profile'];
+var mainScreens = ['screen-dashboard','screen-plan','screen-trainers','screen-community','screen-profile'];
+var lastNavScreen = 'screen-dashboard';
+var navScreens = {
+  'screen-dashboard': 'screen-dashboard',
+  'screen-plan': 'screen-plan',
+  'screen-workout': 'screen-plan',
+  'screen-active-workout': null,
+  'screen-complete': null,
+  'screen-trainers': 'screen-trainers',
+  'screen-trainer-profile': 'screen-trainers',
+  'screen-chat': 'screen-trainers',
+  'screen-community': 'screen-community',
+  'screen-profile': 'screen-profile',
+  'screen-subscription': 'screen-profile',
+  'screen-devices': 'screen-profile',
+};
 
 function goTo(screenId) {
-  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var current = document.querySelector('.screen.active');
+  var tabScreens = ['screen-dashboard','screen-plan','screen-trainers','screen-community','screen-profile'];
+  var isTabSwitch = tabScreens.indexOf(screenId) !== -1 && current && tabScreens.indexOf(current.id) !== -1;
+
+  if (current && current.id !== screenId) {
+    if (isTabSwitch) {
+      current.style.transition = 'opacity 0.22s ease';
+      current.style.transform = 'none';
+      current.classList.remove('active');
+      var c = current;
+      setTimeout(function() { c.style.transition = ''; c.style.transform = ''; }, 250);
+    } else {
+      current.classList.add('exit-left');
+      current.classList.remove('active');
+      var c2 = current;
+      setTimeout(function() { c2.classList.remove('exit-left'); }, 350);
+    }
+  }
   var target = document.getElementById(screenId);
   if (target) {
+    if (isTabSwitch) {
+      target.style.transition = 'opacity 0.22s ease';
+      target.style.transform = 'none';
+    }
     target.classList.add('active');
     target.scrollTop = 0;
+    if (isTabSwitch) {
+      var t = target;
+      setTimeout(function() { t.style.transition = ''; t.style.transform = ''; }, 250);
+    }
   }
 
+  if (mainScreens.indexOf(screenId) !== -1) lastNavScreen = screenId;
+
   var nav = document.getElementById('bottomNav');
-  if (mainScreens.indexOf(screenId) !== -1 || screenId === 'screen-trainer-profile') {
-    nav.classList.add('visible');
+  var navTarget = navScreens[screenId];
+  if (navTarget !== undefined) {
+    if (navTarget === null) {
+      nav.classList.remove('visible');
+    } else {
+      nav.classList.add('visible');
+      var navItems = nav.querySelectorAll('.nav-item');
+      navItems.forEach(function(item, i) {
+        var isActive = item.dataset.screen === navTarget;
+        item.classList.toggle('active', isActive);
+        if (isActive) moveIndicator(i, navItems.length);
+      });
+    }
   } else {
     nav.classList.remove('visible');
   }
 
-  document.querySelectorAll('.nav-item').forEach(function(item) {
-    if (item.dataset.screen === screenId) {
-      item.classList.add('active');
-    } else {
-      item.classList.remove('active');
-    }
-  });
+  if (screenId === 'screen-active-workout') {
+    timerSeconds = 360; elapsedSeconds = 120; isPaused = false;
+    var te = document.getElementById('awTimer');
+    var ee = document.getElementById('awElapsed');
+    if (te) te.textContent = '6:00';
+    if (ee) ee.textContent = '2:00';
+    startWorkoutTimer();
+  } else if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+function moveIndicator(index, total) {
+  var indicator = document.getElementById('navIndicator');
+  if (!indicator) return;
+  var pct = ((index + 0.5) / total) * 100;
+  indicator.style.left = 'calc(' + pct + '% - 16px)';
 }
 
 function navTo(screenId) {
@@ -2243,6 +4222,15 @@ function selectOption(el, stepId) {
   el.classList.add('selected');
   var btn = document.getElementById('ob1-next');
   if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'all'; }
+  // Show race picker if "Run a race" selected
+  var picker = document.getElementById('racePicker');
+  if (picker) {
+    if (el.getAttribute('data-goal') === 'race') {
+      picker.classList.add('open');
+    } else {
+      picker.classList.remove('open');
+    }
+  }
 }
 
 function onboardNext(step) {
@@ -2305,6 +4293,184 @@ function toggleFilter(el) {
 function enterApp() {
   goTo('screen-dashboard');
 }
+
+/* ── Build Plan (reflects onboarding choices) ── */
+function buildPlan() {
+  // Read selections
+  var goalCard = document.querySelector('#ob-step-1 .option-card.selected');
+  var goalLabel = goalCard ? goalCard.querySelector('.option-label').textContent : 'General fitness';
+  var sessVal = document.getElementById('sessVal');
+  var lenVal = document.getElementById('lenVal');
+  var freq = sessVal ? sessVal.textContent : '3×';
+  var dur = lenVal ? lenVal.textContent.replace(' min','') : '45';
+  var sessions = parseInt(freq) * 8;
+
+  // Race-specific text
+  var raceOpt = document.querySelector('.race-option.race-selected');
+  var planName, subText;
+  if (goalLabel === 'Run a race' && raceOpt) {
+    var raceName = raceOpt.querySelector('.race-name').textContent;
+    planName = raceName + ' prep';
+    subText = "Your " + raceName + " training plan is ready — " + freq.replace('×','') + " sessions per week, building progressively to race day.";
+  } else if (goalLabel === 'Build strength') {
+    planName = 'Strength programme';
+    subText = "Your strength plan is ready — " + freq.replace('×','') + " sessions per week, focusing on progressive overload and recovery.";
+  } else if (goalLabel === 'Stay active') {
+    planName = 'Active lifestyle plan';
+    subText = "Your activity plan is ready — gentle, consistent movement " + freq.replace('×','') + " times per week.";
+  } else {
+    planName = 'All-round fitness';
+    subText = "Your balanced fitness plan is ready — " + freq.replace('×','') + " sessions per week mixing endurance, strength, and mobility.";
+  }
+
+  // Update DOM
+  var el;
+  el = document.getElementById('readyPlanName'); if (el) el.textContent = planName;
+  el = document.getElementById('readySub'); if (el) el.textContent = subText;
+  el = document.getElementById('readyFreq'); if (el) el.textContent = freq;
+  el = document.getElementById('readyDur'); if (el) el.textContent = dur;
+  el = document.getElementById('readySessions'); if (el) el.textContent = sessions;
+
+  goTo('screen-ready');
+}
+
+/* ── Modals ── */
+function openModal(id) {
+  if (!wasTap()) return;
+  var el = document.getElementById(id);
+  if (el) el.classList.add('open');
+}
+function closeModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+function closeModalOnBackdrop(e) {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('open');
+  }
+}
+
+function selectIntensity(el) {
+  if (!wasTap()) return;
+  el.parentElement.querySelectorAll('.intensity-opt').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+/* ── Active Workout ── */
+var isPaused = false;
+var timerSeconds = 360; // 6:00
+var elapsedSeconds = 120; // 2:00
+var timerInterval = null;
+
+function formatTime(s) {
+  var m = Math.floor(s / 60);
+  var sec = s % 60;
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+function startWorkoutTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(function() {
+    if (isPaused) return;
+    if (timerSeconds > 0) {
+      timerSeconds--;
+      elapsedSeconds++;
+      var timerEl = document.getElementById('awTimer');
+      var elapsedEl = document.getElementById('awElapsed');
+      if (timerEl) timerEl.textContent = formatTime(timerSeconds);
+      if (elapsedEl) elapsedEl.textContent = formatTime(elapsedSeconds);
+      // Update ring progress
+      var ring = document.querySelector('.aw-ring-progress');
+      if (ring) {
+        var total = timerSeconds + elapsedSeconds;
+        var progress = elapsedSeconds / total;
+        var dashoffset = 553 * (1 - progress);
+        ring.setAttribute('stroke-dashoffset', dashoffset);
+      }
+    }
+  }, 1000);
+}
+
+function togglePause() {
+  if (!wasTap()) return;
+  isPaused = !isPaused;
+  document.getElementById('pauseIcon').style.display = isPaused ? 'none' : 'block';
+  document.getElementById('playIcon').style.display = isPaused ? 'block' : 'none';
+  var ring = document.querySelector('.aw-ring-svg');
+  if (ring) ring.style.animationPlayState = isPaused ? 'paused' : 'running';
+}
+
+/* ── Community Likes ── */
+function toggleLike(btn) {
+  if (!wasTap()) return;
+  var isLiked = btn.classList.toggle('liked');
+  var text = btn.textContent.trim();
+  var num = parseInt(text.replace(/[^\d]/g, '')) || 0;
+  num = isLiked ? num + 1 : num - 1;
+  btn.innerHTML = (isLiked ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="var(--blaze)" stroke="var(--blaze)" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21.3l7.8-7.8 1-1.1a5.5 5.5 0 000-7.8z"/></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21.3l7.8-7.8 1-1.1a5.5 5.5 0 000-7.8z"/></svg>') + ' ' + num;
+}
+
+/* ── Workout Complete Feedback ── */
+function selectEmoji(btn) {
+  if (!wasTap()) return;
+  btn.parentElement.querySelectorAll('.wc-emoji').forEach(function(e) { e.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+
+/* ── Travel Adjustment ── */
+function toggleTravel(el) {
+  if (!wasTap()) return;
+  el.classList.toggle('travel-selected');
+}
+
+/* ── Subscription ── */
+function selectPlan(el) {
+  if (!wasTap()) return;
+  el.parentElement.querySelectorAll('.sub-plan').forEach(function(p) { p.classList.remove('selected-plan'); });
+  el.classList.add('selected-plan');
+}
+
+/* ── Race Picker ── */
+function selectRace(el) {
+  if (!wasTap()) return;
+  document.querySelectorAll('.race-option').forEach(function(r) { r.classList.remove('race-selected'); });
+  el.classList.add('race-selected');
+}
+
+/* ── Toast Notifications ── */
+function showToast(msg) {
+  var toast = document.getElementById('appToast');
+  var toastMsg = document.getElementById('toastMsg');
+  if (!toast || !toastMsg) return;
+  toastMsg.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 2500);
+}
+
+/* ── Device Toggle ── */
+function toggleDevice(el) {
+  if (!wasTap()) return;
+  el.classList.toggle('on');
+  var status = el.parentElement.querySelector('.device-status');
+  if (el.classList.contains('on')) {
+    status.textContent = 'Connected';
+    status.style.color = 'var(--sol)';
+    showToast('Device connected');
+  } else {
+    status.textContent = 'Not connected';
+    status.style.color = '';
+    showToast('Device disconnected');
+  }
+}
+
+/* ── Dynamic Greeting ── */
+function updateGreeting() {
+  var h = new Date().getHours();
+  var greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  var el = document.getElementById('dashGreeting');
+  if (el) el.textContent = greeting;
+}
+updateGreeting();
 
 /* ── Reset ── */
 function resetApp() {
