@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>JUVI — Fitness, your way</title>
-<meta name="theme-color" content="#FAFAF7">
+<meta name="theme-color" content="#0E0E14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<meta name="theme-color" content="#FAFAF7">
+<meta name="theme-color" content="#0E0E14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,22 +22,23 @@
 :root {
   /* Palette */
   --sol: #D9A62E;
-  --sol-soft: #F5E6B8;
-  --sol-bg: #FDF8ED;
+  --sol-soft: #2E2518;
+  --sol-bg: #1E1A10;
   --blaze: #C44235;
-  --blaze-soft: #F3CCC8;
-  --blaze-bg: #FDF0EE;
-  --chalk: #FAFAF7;
-  --paper: #F2EEEA;
-  --ink: #1C1816;
-  --ink-60: #6B6560;
-  --ink-30: #B0AAA4;
-  --ink-10: #E2DFDB;
-  --white: #FFFFFF;
+  --blaze-soft: #2E1916;
+  --blaze-bg: #1E1412;
+  --chalk: #0E0E14;
+  --paper: #181822;
+  --ink: #F0EDE8;
+  --ink-60: #9A968F;
+  --ink-30: #55515C;
+  --ink-10: #2A2835;
+  --white: #1C1C26;
+  --text-inv: #F0EDE8;
 
   /* Gradient */
   --glow: linear-gradient(135deg, #D9A62E 0%, #C44235 100%);
-  --glow-soft: linear-gradient(135deg, #F5E6B8 0%, #F3CCC8 100%);
+  --glow-soft: linear-gradient(135deg, #2E2518 0%, #2E1916 100%);
 
   /* Type */
   --display: 'Space Grotesk', system-ui, sans-serif;
@@ -101,7 +102,7 @@ body {
 /* On desktop, show as centered phone mockup */
 @media (min-width: 431px) {
   body {
-    background: #E8E4E0;
+    background: #08080C;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -129,7 +130,7 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(28, 24, 22, 0.35);
+  background: rgba(255, 255, 255, 0.1);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border: none;
@@ -137,7 +138,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--white);
+  color: var(--text-inv);
   z-index: 150;
   transition: background 0.2s, transform 0.15s;
   -webkit-tap-highlight-color: transparent;
@@ -178,7 +179,7 @@ body {
 .modal-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(28, 24, 22, 0.45);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 50;
   opacity: 0;
   pointer-events: none;
@@ -196,7 +197,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  background: var(--white);
+  background: #1C1C26;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: var(--space-lg);
   padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
@@ -248,8 +249,8 @@ body {
   touch-action: manipulation;
 }
 .intensity-opt.selected {
-  border-color: var(--ink);
-  background: var(--paper);
+  border-color: var(--sol);
+  background: var(--sol-bg);
 }
 .intensity-emoji {
   font-size: 24px;
@@ -285,7 +286,7 @@ body {
   left: 0;
   right: 0;
   height: var(--nav-h);
-  background: var(--white);
+  background: #12121A;
   border-top: 1px solid var(--ink-10);
   display: flex;
   align-items: flex-start;
@@ -333,6 +334,7 @@ body {
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.02em;
+  color: inherit;
 }
 
 /* ══════════════════════════════════════════
@@ -351,9 +353,9 @@ body {
 }
 .welcome-mark {
   font-family: var(--display);
-  font-size: 72px;
+  font-size: 84px;
   font-weight: 700;
-  color: var(--white);
+  color: var(--text-inv);
   letter-spacing: -2px;
   line-height: 0.9;
   margin-bottom: var(--space-md);
@@ -393,7 +395,7 @@ body {
 }
 .btn-gradient {
   background: var(--glow);
-  color: var(--white);
+  color: var(--text-inv);
   box-shadow: 0 4px 24px rgba(196,66,53,0.25);
 }
 .btn-outline {
@@ -429,7 +431,7 @@ body {
   overflow: hidden;
   transition: background 0.3s;
 }
-.progress-seg.filled { background: var(--ink); }
+.progress-seg.filled { background: var(--sol); }
 .progress-seg.filling {
   background: var(--ink-10);
   position: relative;
@@ -438,7 +440,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--ink);
+  background: var(--sol);
   border-radius: 2px;
   animation: fillBar 0.4s ease forwards;
 }
@@ -508,8 +510,8 @@ body {
 }
 .option-card:active { transform: scale(0.98); }
 .option-card.selected {
-  border-color: var(--ink);
-  background: var(--paper);
+  border-color: var(--sol);
+  background: var(--sol-bg);
 }
 .option-icon {
   width: 44px;
@@ -568,7 +570,7 @@ body {
   border-color: #E8935A;
 }
 .flex-toggle.active .flex-toggle-text strong,
-.flex-toggle.active .flex-toggle-text span { color: var(--white); }
+.flex-toggle.active .flex-toggle-text span { color: var(--text-inv); }
 .flex-toggle.active .flex-toggle-check::after { opacity: 1; }
 .flex-toggle-icon {
   width: 40px;
@@ -612,7 +614,7 @@ body {
 }
 .flex-toggle.active .flex-toggle-check {
   background: var(--white);
-  border-color: var(--white);
+  border-color: var(--text-inv);
 }
 .flex-toggle-check::after {
   content: '✓';
@@ -644,9 +646,9 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .day-pill.selected {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--white);
+  border-color: var(--sol);
+  background: var(--sol);
+  color: #0E0E14;
 }
 
 /* Slider */
@@ -812,7 +814,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .dash-name {
   font-family: var(--display);
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.3px;
 }
@@ -853,8 +855,8 @@ input[type="range"]::-webkit-slider-thumb {
   transition: all 0.2s;
 }
 .week-day.today .week-day-num {
-  background: var(--ink);
-  color: var(--white);
+  background: var(--sol);
+  color: #0E0E14;
 }
 .week-day.completed .week-day-num {
   background: var(--sol-bg);
@@ -873,16 +875,16 @@ input[type="range"]::-webkit-slider-thumb {
 .section-pad { padding: 0 var(--space-lg); }
 .section-title {
   font-family: var(--display);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   margin-bottom: var(--space-md);
 }
 
 .today-card {
-  background: var(--ink);
+  background: linear-gradient(135deg, #1E1A10 0%, #1E1412 50%, #0E0E14 100%);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  color: var(--white);
+  color: var(--text-inv);
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -951,6 +953,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: var(--radius-md);
   padding: var(--space-md) var(--space-lg);
   border: 1px solid var(--ink-10);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 .stat-value {
   font-family: var(--display);
@@ -1014,7 +1017,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .chart-bar.filled { background: var(--glow); }
 .chart-bar.current {
-  background: var(--ink);
+  background: var(--sol);
   animation: barPulse 2s ease-in-out infinite;
 }
 @keyframes barPulse {
@@ -1029,7 +1032,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 600;
   color: var(--ink-30);
 }
-.chart-bar-group.today .chart-day-label { color: var(--ink); }
+.chart-bar-group.today .chart-day-label { color: var(--sol); }
 
 .chart-legend {
   display: flex;
@@ -1214,7 +1217,7 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   padding: var(--space-lg);
   padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
-  color: var(--white);
+  color: var(--text-inv);
 }
 .aw-header {
   width: 100%;
@@ -1408,9 +1411,9 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-tap-highlight-color: transparent;
 }
 .filter-pill.active {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--white);
+  border-color: var(--sol);
+  background: var(--sol);
+  color: #0E0E14;
 }
 
 /* Trainer Cards */
@@ -1432,6 +1435,7 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-tap-highlight-color: transparent;
 }
 .trainer-card:active { transform: scale(0.98); }
+.trainer-card { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 .trainer-avatar {
   width: 72px;
   height: 72px;
@@ -1588,7 +1592,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: var(--space-lg);
   background: var(--glow);
   border-radius: var(--radius-lg);
-  color: var(--white);
+  color: var(--text-inv);
   position: relative;
   overflow: hidden;
 }
@@ -1745,7 +1749,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-family: var(--display);
   font-size: 32px;
   font-weight: 700;
-  color: var(--white);
+  color: var(--text-inv);
 }
 .profile-name {
   font-family: var(--display);
@@ -1762,13 +1766,13 @@ input[type="range"]::-webkit-slider-thumb {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1px;
-  background: var(--ink-10);
+  background: #0E0E14;
   margin: var(--space-md) var(--space-lg) var(--space-xl);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
 .profile-stat {
-  background: var(--white);
+  background: var(--white); border-radius: 0;
   padding: var(--space-md);
   text-align: center;
 }
@@ -1897,7 +1901,7 @@ input[type="range"]::-webkit-slider-thumb {
   transition: background 0.15s;
 }
 .plan-day:last-child { border-bottom: none; }
-.plan-day:active { background: var(--paper); margin: 0 calc(-1 * var(--space-lg)); padding-left: var(--space-lg); padding-right: var(--space-lg); }
+.plan-day:active { background: var(--white); margin: 0 calc(-1 * var(--space-lg)); padding-left: var(--space-lg); padding-right: var(--space-lg); }
 .plan-day.rest-day { cursor: default; opacity: 0.5; }
 .plan-day.rest-day:active { background: transparent; margin: 0; padding-left: 0; padding-right: 0; }
 
@@ -1919,7 +1923,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .plan-day-check.done {
   background: var(--glow);
-  color: var(--white);
+  color: var(--text-inv);
 }
 .plan-day-check.rest {
   background: var(--paper);
@@ -1927,7 +1931,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 16px;
 }
 .plan-day-check.current-check {
-  background: var(--ink);
+  background: var(--sol);
   position: relative;
 }
 .plan-day-dot-pulse {
@@ -1955,8 +1959,8 @@ input[type="range"]::-webkit-slider-thumb {
   display: inline-flex;
   padding: 1px 8px;
   border-radius: var(--radius-full);
-  background: var(--ink);
-  color: var(--white);
+  background: var(--sol);
+  color: #0E0E14;
   font-size: 10px;
   font-weight: 600;
   margin-left: 6px;
@@ -1998,7 +2002,7 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--white);
+  color: var(--text-inv);
 }
 .wc-content {
   padding: var(--space-lg);
@@ -2100,7 +2104,7 @@ input[type="range"]::-webkit-slider-thumb {
   touch-action: manipulation;
 }
 .wc-emoji.selected {
-  border-color: var(--white);
+  border-color: var(--text-inv);
   background: rgba(255,255,255,0.15);
   transform: scale(1.15);
 }
@@ -2145,7 +2149,7 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--white);
+  color: var(--text-inv);
   box-shadow: 0 2px 12px rgba(196,66,53,0.2);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -2185,7 +2189,7 @@ input[type="range"]::-webkit-slider-thumb {
   height: 18px;
   border-radius: 50%;
   background: var(--blaze);
-  color: var(--white);
+  color: var(--text-inv);
   font-size: 10px;
   font-weight: 700;
   display: flex;
@@ -2306,17 +2310,18 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-.sub-plan.selected-plan { border-color: var(--ink); }
+.sub-plan.selected-plan { border-color: var(--sol); }
 .sub-plan.popular {
   border-color: var(--sol);
   background: var(--sol-bg);
+  box-shadow: 0 0 0 1px rgba(217,166,46,0.15);
 }
 .sub-popular-badge {
   position: absolute;
   top: -10px;
   right: var(--space-lg);
   background: var(--glow);
-  color: var(--white);
+  color: var(--text-inv);
   font-family: var(--display);
   font-size: 11px;
   font-weight: 600;
@@ -2485,7 +2490,7 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  background: var(--blaze-bg);
+  background: var(--blaze-bg); border: 1px solid rgba(196,66,53,0.2);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-full);
 }
@@ -2509,8 +2514,8 @@ input[type="range"]::-webkit-slider-thumb {
   top: var(--space-lg);
   left: var(--space-lg);
   right: var(--space-lg);
-  background: var(--ink);
-  color: var(--white);
+  background: #F0EDE8;
+  color: #0E0E14;
   padding: var(--space-md) var(--space-lg);
   border-radius: var(--radius-md);
   font-size: 14px;
@@ -2662,7 +2667,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 44px;
   height: 26px;
   border-radius: 13px;
-  background: var(--ink-10);
+  background: #2A2835;
   border: none;
   position: relative;
   cursor: pointer;
@@ -2722,9 +2727,9 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .done-dot { background: var(--sol-bg); border: 2px solid var(--sol); }
 .active-dot {
-  background: var(--ink);
-  border: 2px solid var(--ink);
-  box-shadow: 0 0 0 4px rgba(28,24,22,0.1);
+  background: var(--sol);
+  border: 2px solid var(--sol);
+  box-shadow: 0 0 0 4px rgba(217,166,46,0.15);
 }
 .active-dot::after {
   content: '';
@@ -2760,7 +2765,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-bottom: 1px solid var(--ink-10);
 }
 .notif-item:last-child { border-bottom: none; }
-.notif-item.unread { background: var(--sol-bg); margin: 0 calc(-1 * var(--space-lg)); padding-left: var(--space-lg); padding-right: var(--space-lg); border-radius: var(--radius-sm); border-bottom: none; margin-bottom: 2px; }
+.notif-item.unread { background: var(--sol-bg); border-left: 3px solid var(--sol); margin: 0 calc(-1 * var(--space-lg)); padding-left: var(--space-lg); padding-right: var(--space-lg); border-radius: var(--radius-sm); border-bottom: none; margin-bottom: 2px; }
 .notif-icon {
   width: 40px;
   height: 40px;
@@ -2809,8 +2814,8 @@ input[type="range"]::-webkit-slider-thumb {
   border-bottom-left-radius: 4px;
 }
 .chat-bubble.mine {
-  background: var(--ink);
-  color: var(--white);
+  background: var(--glow);
+  color: var(--text-inv);
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
@@ -2826,7 +2831,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--ink-30);
   margin-top: 4px;
 }
-.chat-bubble.mine .chat-bubble-time { color: rgba(255,255,255,0.4); }
+.chat-bubble.mine .chat-bubble-time { color: rgba(240,237,232,0.5); }
 .chat-input-bar {
   display: flex;
   gap: var(--space-sm);
@@ -2902,6 +2907,36 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--ink-60);
   line-height: 1.5;
 }
+
+/* ── Light Mode Override ── */
+.phone-frame.light-mode {
+  --chalk: #FAFAF7;
+  --paper: #F2EEEA;
+  --ink: #1C1816;
+  --ink-60: #6B6560;
+  --ink-30: #B0AAA4;
+  --ink-10: #E2DFDB;
+  --white: #FFFFFF;
+  --text-inv: #1C1816;
+  --sol-bg: #FDF8ED;
+  --blaze-bg: #FDF0EE;
+}
+.phone-frame.light-mode .bottom-nav { background: #FFFFFF; }
+.phone-frame.light-mode .toast { background: #1C1816; color: #F0EDE8; }
+.phone-frame.light-mode .modal-sheet { background: #FFFFFF; }
+.phone-frame.light-mode .fs-toggle { background: rgba(28,24,22,0.3); }
+.phone-frame.light-mode .stat-card { box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.phone-frame.light-mode .profile-stats { background: #E2DFDB; }
+.phone-frame.light-mode .today-card { background: #1C1816 !important; color: #F0EDE8; }
+.phone-frame.light-mode .today-card .today-meta-item,
+.phone-frame.light-mode .today-card .today-cta { color: inherit; }
+.phone-frame.light-mode .quest-card { background: linear-gradient(135deg,#FDF8ED,#FDF0EE) !important; }
+.phone-frame.light-mode .chat-bubble.mine { background: #1C1816; color: #F0EDE8; }
+.phone-frame.light-mode .day-pill.selected,
+.phone-frame.light-mode .filter-pill.active,
+.phone-frame.light-mode .plan-today-badge { color: #FFFFFF; }
+.phone-frame.light-mode .countdown-event { border-color: rgba(196,66,53,0.15); }
+
 </style>
 </head>
 <body>
@@ -2924,7 +2959,7 @@ input[type="range"]::-webkit-slider-thumb {
       JUVI
     </div>
     <div class="welcome-tagline">
-      Fitness that adapts to your life — not the other way around.
+      Training that adapts to your life. AI-powered plans. Real trainers. Your pace.
     </div>
     <button class="btn-primary btn-white btn-block" onclick="goTo('screen-onboarding')" data-go="screen-onboarding">
       Get started
@@ -3213,6 +3248,19 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
       </div>
 
+      <!-- Weekly Quest -->
+      <div class="quest-card" style="margin-top:var(--space-xl);padding:var(--space-lg);background:linear-gradient(135deg, #1E1A10 0%, #1E1412 100%);border-radius:var(--radius-lg);border:1px solid var(--ink-10);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md);">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--sol);font-weight:600;font-family:var(--display);">This week's quest</div>
+          <div style="font-size:12px;color:var(--ink-30);">4/6 done</div>
+        </div>
+        <div style="font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:var(--space-sm);">Complete 3 runs this week</div>
+        <div style="font-size:13px;color:var(--ink-60);margin-bottom:var(--space-md);">Finish your tempo run today to unlock the 'Speed Demon' badge</div>
+        <div style="height:6px;background:var(--ink-10);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:66%;background:var(--glow);border-radius:3px;"></div>
+        </div>
+      </div>
+
       <div class="quick-actions">
         <div class="quick-action" onclick="goTo('screen-trainers')" data-go="screen-trainers">
           <div class="quick-action-icon" style="background:var(--sol-bg);color:var(--sol)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
@@ -3225,6 +3273,20 @@ input[type="range"]::-webkit-slider-thumb {
         <div class="quick-action" onclick="goTo('screen-community')" data-go="screen-community">
           <div class="quick-action-icon" style="background:var(--paper);color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <div class="quick-action-label">Community</div>
+        </div>
+      </div>
+
+
+      <!-- Suggested Trainer -->
+      <div style="margin-top:var(--space-xl);">
+        <div class="section-title">Suggested for you</div>
+        <div class="trainer-card" onclick="goTo('screen-trainer-profile')" data-go="screen-trainer-profile" style="border-color:var(--sol);border-width:1px;">
+          <div class="trainer-avatar" style="background:var(--blaze-bg);color:var(--blaze)"><span style="font-family:var(--display);font-size:20px;font-weight:700">SK</span></div>
+          <div class="trainer-info">
+            <div class="trainer-name">Sarah K. <span style="font-size:11px;color:var(--sol);font-weight:600;">MATCH</span></div>
+            <div class="trainer-specialty">Running coach · Dublin · Marathon specialist</div>
+            <div class="trainer-rating"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--sol)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg> <strong>4.9</strong> · 127 athletes</div>
+          </div>
         </div>
       </div>
 
@@ -3287,9 +3349,9 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="tip-card" style="margin-top:var(--space-xl);">
         <div class="tip-header">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sol)" stroke-width="2" stroke-linecap="round"><path d="M12 2a7 7 0 017 7c0 3-2 5-3 7h-8c-1-2-3-4-3-7a7 7 0 017-7z"/><path d="M9 18h6M10 22h4"/></svg>
-        <span class="tip-label">Today's tip</span>
+        <span class="tip-label">AI insight</span>
         </div>
-        <div class="tip-text">Your tempo run today will feel harder in the first 2 intervals. That's normal — your body needs 8–10 minutes to hit its rhythm. Trust the pace and it'll click by interval 3.</div>
+        <div class="tip-text">Based on your last 3 sessions, your 5K pace has improved by 12 sec/km. Today's tempo intervals are calibrated to push that further. Your body is ready — trust the plan.</div>
       </div>
     </div>
     <div class="modal-overlay" id="travelModal" onclick="closeModalOnBackdrop(event)">
@@ -3432,7 +3494,7 @@ input[type="range"]::-webkit-slider-thumb {
   <!-- ╔══════════════════════════════════════╗
        ║  SCREEN: Active Workout              ║
        ╚══════════════════════════════════════╝ -->
-  <div class="screen screen-active-workout" id="screen-active-workout" style="background:var(--ink);">
+  <div class="screen screen-active-workout" id="screen-active-workout" style="background:#08080C;">
     <div class="aw-header">
       <button class="aw-close" onclick="goTo('screen-workout')" data-go="screen-workout">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="2"><path d="M15 5L5 15M5 5l10 10"/></svg>
@@ -3532,6 +3594,12 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
       </div>
 
+
+      <!-- Week insight -->
+      <div style="background:linear-gradient(135deg,var(--sol-bg),var(--blaze-bg));border-radius:var(--radius-md);padding:var(--space-md) var(--space-lg);margin-bottom:var(--space-lg);border:1px solid rgba(217,166,46,0.1);">
+        <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;font-family:var(--display);color:var(--sol);margin-bottom:4px;">AI recommendation</div>
+        <div style="font-size:13px;color:var(--ink-60);line-height:1.5;">Your Tuesday intervals went well — this week's tempo targets are 5 sec/km faster. Saturday's long run is your key session. Prioritize sleep Thursday and Friday.</div>
+      </div>
       <!-- Day cards -->
       <div class="plan-day completed" onclick="goTo('screen-workout')" data-go="screen-workout">
         <div class="plan-day-left">
@@ -3561,12 +3629,12 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
       </div>
 
-      <div class="plan-day rest-day">
+      <div class="plan-day rest-day" style="opacity:1;background:var(--sol-bg);margin:0 calc(-1 * var(--space-lg));padding-left:var(--space-lg);padding-right:var(--space-lg);border-radius:var(--radius-sm);border-bottom:none;cursor:default;">
         <div class="plan-day-left">
-          <div class="plan-day-check rest">–</div>
+          <div class="plan-day-check" style="background:var(--sol-bg);border:2px solid var(--sol);">🧘</div>
           <div>
-            <div class="plan-day-name">Wednesday</div>
-            <div class="plan-day-workout">Rest day</div>
+            <div class="plan-day-name">Wednesday <span style="font-size:10px;color:var(--sol);font-weight:600;">RECOVERY</span></div>
+            <div class="plan-day-workout">Active rest · your body rebuilds stronger</div>
           </div>
         </div>
       </div>
@@ -3626,7 +3694,7 @@ input[type="range"]::-webkit-slider-thumb {
   <!-- ╔══════════════════════════════════════╗
        ║  SCREEN: Workout Complete            ║
        ╚══════════════════════════════════════╝ -->
-  <div class="screen screen-complete" id="screen-complete" style="background:var(--ink);">
+  <div class="screen screen-complete" id="screen-complete" style="background:#08080C;">
     <div class="wc-content">
       <button class="aw-close" onclick="goTo('screen-dashboard')" data-go="screen-dashboard" style="position:absolute;top:var(--space-lg);right:var(--space-lg);">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="2"><path d="M15 5L5 15M5 5l10 10"/></svg>
@@ -3678,7 +3746,7 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
       </div>
 
-      <button class="btn-primary btn-block" style="background:var(--white);color:var(--ink);" onclick="goTo('screen-dashboard')" data-go="screen-dashboard">Done</button>
+      <button class="btn-primary btn-block" style="background:var(--text-inv);color:#0E0E14;" onclick="goTo('screen-dashboard')" data-go="screen-dashboard">Done</button>
       <button class="btn-primary btn-block" style="background:rgba(255,255,255,0.1);color:var(--white);margin-top:var(--space-sm);" onclick="showToast('Workout shared!');setTimeout(function(){goTo('screen-community')},800)">Share to community</button>
     </div>
   </div>
@@ -4090,6 +4158,14 @@ input[type="range"]::-webkit-slider-thumb {
 
     <div class="profile-section">
       <div class="profile-section-title">Account</div>
+      <div class="profile-row" onclick="toggleTheme()">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+          <div class="profile-row-label">Appearance</div>
+        </div>
+        <div class="profile-row-chevron" style="font-size:12px;color:var(--ink-30);">Dark</div>
+      </div>
+
       <div class="profile-row" onclick="showToast('Profile editor coming in v1')">
         <div class="profile-row-left">
           <div class="profile-row-icon" style="color:var(--ink-60)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
@@ -5009,6 +5085,19 @@ function updateCountdown() {
   if (el && diff > 0) el.textContent = diff + ' days';
 }
 updateCountdown();
+
+
+/* ── Theme Toggle ── */
+function toggleTheme() {
+  if (!wasTap()) return;
+  var frame = document.querySelector('.phone-frame');
+  frame.classList.toggle('light-mode');
+  var isLight = frame.classList.contains('light-mode');
+  showToast(isLight ? 'Light mode' : 'Dark mode');
+  // Update theme-color meta
+  var meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = isLight ? '#FAFAF7' : '#0E0E14';
+}
 
 /* ── Fullscreen ── */
 function toggleFullscreen() {
